@@ -13,8 +13,8 @@
 		<tr class=<% if row%2==0 %> "odd" <% else %> "even" <% end %>>
 			<td><%= user.login %></td>
 			<% @time_unit_num.times do |i| %>
-				<% capacity = user.get_capacity(@time_unit,i,@project) %>
-				<td id=<%=user.id%> class="edit_user_capacities" title="<%=user.get_tooltip(@time_unit,i,@project)%>" value=<%=capacity%>>
+				<% capacity = user.get_capacity(@time_unit,i,@projects) %>
+				<td id=<%=user.id%> class="edit_user_capacities" title="<%=user.get_tooltip(@time_unit,i,@projects)%>" value=<%=capacity%>>
 					<%= capacity %>
 				</td>
 			<% end %>

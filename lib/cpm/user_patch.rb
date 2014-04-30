@@ -20,7 +20,7 @@ module CPM
     end
 
     module InstanceMethods
-      def get_capacity(type,i,project)
+      def get_capacity(type,i,projects)
         case type
           when 'week'
             #start_day = (today-(today.cwday-1))+7*i
@@ -37,8 +37,8 @@ module CPM
         end
         
 
-        if project.present?
-          query = "from_date <= ? AND to_date >= ? AND project_id IN ("+project.to_sentence+")"
+        if projects.present?
+          query = "from_date <= ? AND to_date >= ? AND project_id IN ("+projects.join(',')+")"
         else
           query = "from_date <= ? AND to_date >= ?"
         end
@@ -72,7 +72,7 @@ module CPM
       end
 
       # Show tooltip message for the user row
-      def get_tooltip(type,i,project)
+      def get_tooltip(type,i,projects)
         case type
           when 'week'
             #start_day = (today-(today.cwday-1))+7*i
@@ -88,8 +88,8 @@ module CPM
             end_day = start_day+(date.end_of_month).day
         end
 
-        if project.present?
-          query = "from_date <= ? AND to_date >= ? AND project_id IN ("+project.to_sentence+")"
+        if projects.present?
+          query = "from_date <= ? AND to_date >= ? AND project_id IN ("+projects.join(',')+")"
         else
           query = "from_date <= ? AND to_date >= ?"
         end

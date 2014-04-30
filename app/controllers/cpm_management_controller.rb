@@ -132,7 +132,7 @@ class CpmManagementController < ApplicationController
     ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     options = Project.where("id NOT IN (?)", ignored_projects).collect{|p| "<option value='"+(p.id).to_s+"'>"+p.name+"</option>"}
 
-    render text: l(:"cpm.label_projects")+" <select name='projects[]' class='filter_project' multiple>"+options.join('')+"</select>"
+    render text: l(:"cpm.label_projects")+" <select name='projects[]' class='filter_projects' multiple>"+options.join('')+"</select>"
   end
 
   def get_time_unit_filter
