@@ -1,0 +1,32 @@
+<h3><%=l(:"cpm.title_results")%></h3>
+
+<% if @users.present? %>
+	<table id="capacity_results" class="list issues" >
+		<tr>
+			<th><%=l(:"cpm.label_user")%></th>
+			<% @time_unit_num.times do |i| %>
+				<th><%= get_column_name(@time_unit,i) %></th>
+			<% end %>
+		</tr>
+	<% row=0 %>
+	<% @users.each do |user| %>
+		<tr class=<% if row%2==0 %> "odd" <% else %> "even" <% end %>>
+			<td><%= user.login %></td>
+			<% @time_unit_num.times do |i| %>
+				<% capacity = user.get_capacity(@time_unit,i,@project) %>
+				<td id=<%=user.id%> class="edit_user_capacities" title="<%=user.get_tooltip(@time_unit,i,@project)%>" value=<%=capacity%>>
+					<%= capacity %>
+				</td>
+			<% end %>
+		</tr>
+		<% row+=1 %>
+	<% end %>
+	</table>
+
+	<%=l(:"cpm.label_hide_empty_users") %><input id="hide_empty_users" type="checkbox" />
+	<%=l(:"cpm.label_bar_view") %><input id="bar_view" type="checkbox" />
+<% end %>
+
+
+<div id="dialog">
+</div>

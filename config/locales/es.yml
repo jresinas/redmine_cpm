@@ -1,0 +1,53 @@
+# Spanish strings go here for Rails i18n
+es:
+  field_user: "Usuario"
+  field_project: "Proyecto"
+  field_capacity: "Capacidad"
+  field_from_date: "Fecha de inicio"
+  field_to_date: "Fecha de fin"
+  cpm:
+    title_black_lists: "Listas negras"
+    label_ignored_users: "Usuarios ignorados"
+    label_ignored_projects: "Proyectos ignorados"
+
+    label_assignments: "Asignaciones"
+    label_management: "Gestión"
+
+    title_capacity_managment: "Gestión de capacidades"
+    title_search_filters: "Filtros de busqueda"
+    title_results: "Resultados"
+    title_capacity_assignment: "Asignación de capacidades"
+    label_user: "Usuario"
+    label_project: "Proyecto"
+    label_projects: "Proyectos"
+    label_capacity: "Capacidad"
+    label_start_date: "Fecha de inicio"
+    label_due_date: "Fecha de fin"
+    button_assign: "Asignar"
+
+    label_hide_empty_users: "Ocultar usuarios vacios"
+    label_bar_view: "Ver barras" 
+
+    label_time_unit: "Unidad temporal"
+    label_time_unit_num: "Núm. unidades temporales"
+    label_week: "Semana"
+    label_month: "Mes"
+
+    button_find: "Buscar"
+    label_users: "Usuarios"
+    label_week_n: "Semana %{n}"
+    label_month_n: "Mes %{n}"
+
+    months:
+      January: "Enero"
+      February: "Febrero"
+      March: "Marzo"
+      April: "Abril"
+      May: "Mayo"
+      June: "Junio"
+      July: "Julio"
+      August: "Agosto"
+      September: "Septiembre"
+      October: "Octubre"
+      November: "Noviembre"
+      December: "Diciembre"

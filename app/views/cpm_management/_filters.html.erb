@@ -1,0 +1,14 @@
+<h3><%=l(:"cpm.title_search_filters")%></h3>
+
+<%= form_tag({:action => 'planning'}, {remote: true, id: "find_capacities"}) do %>
+	<div class="splitcontentleft">
+		<div id="active_filters"></div>
+		<div>
+			<%= submit_tag l(:"cpm.button_find") %>
+		</div>
+	</div>
+	<div class="splitcontentright">
+		<%= select_tag(:select_filter, options_for_select(@filters)) %>
+	</div>
+<% end %>
+<div style="clear: both;"></div>

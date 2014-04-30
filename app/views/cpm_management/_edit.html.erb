@@ -1,0 +1,29 @@
+<% @cpm = capacity %>
+<%= form_for @cpm, remote: true, url: {controller: "cpm_management", action: "edit_capacity", id: capacity.id} do |f| %>
+	<div class="splitcontentleft">
+		<div>
+			<%= f.label :project_id, l(:"cpm.label_project") %>
+			<%= f.select(:project_id, options_for_select(@projects_for_selection, @cpm.project_id)) %>
+		</div>
+		<div>
+			<%= f.label :capacity, l(:"cpm.label_capacity") %>
+			<%= f.text_field :capacity %>
+		</div>
+	</div>
+	<div class="splitcontentright">
+		<div>
+			<%= f.label :from_date, l(:"cpm.label_start_date") %>
+			<%= f.text_field :from_date, id: "cpm_user_capacity_from_date_"+(capacity.id).to_s %>
+			<%= calendar_for('cpm_user_capacity_from_date_'+(capacity.id).to_s) %>
+		</div>
+		<div>
+			<%= f.label :to_date, l(:"cpm.label_due_date") %>
+			<%= f.text_field :to_date, id: "cpm_user_capacity_to_date_"+(capacity.id).to_s %>
+			<%= calendar_for('cpm_user_capacity_to_date_'+(capacity.id).to_s) %>
+		</div>
+		<div>
+			<%= f.submit l(:"cpm.button_assign") %>
+		</div>
+	</div>
+<% end %>
+<div style="clear: both;"></div>

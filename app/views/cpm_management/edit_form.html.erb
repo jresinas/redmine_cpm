@@ -1,0 +1,35 @@
+<%= render_flash_messages %>
+
+<% @capacities.each do |c| %>
+	<%= render :partial => 'edit', locals: {capacity: c} %>
+<% end %>
+
+<%= form_for @cpm_user_capacity, remote: true, url: {controller: "cpm_management", action: "add_capacity"} do |f| %>
+	<%= f.hidden_field :user_id %>
+	<div class="splitcontentleft">
+		<div>
+			<%= f.label :project_id, l(:"cpm.label_project") %>
+			<%= f.select(:project_id, options_for_select(@projects_for_selection)) %>
+		</div>
+		<div>
+			<%= f.label :capacity, l(:"cpm.label_capacity") %>
+			<%= f.text_field :capacity %>
+		</div>
+	</div>
+	<div class="splitcontentright">
+		<div>
+			<%= f.label :from_date, l(:"cpm.label_start_date") %>
+			<%= f.text_field :from_date %>
+			<%= calendar_for('cpm_user_capacity_from_date') %>
+		</div>
+		<div>
+			<%= f.label :to_date, l(:"cpm.label_due_date") %>
+			<%= f.text_field :to_date %>
+			<%= calendar_for('cpm_user_capacity_to_date') %>
+		</div>
+		<div>
+			<%= f.submit l(:"cpm.button_assign") %>
+		</div>
+	</div>
+<% end %>
+<div style="clear: both;"></div>

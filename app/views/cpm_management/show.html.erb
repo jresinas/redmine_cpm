@@ -1,0 +1,11 @@
+<% content_for :header_tags do %>
+  <%= javascript_include_tag "cpm_show.js", :plugin => 'redmine_cpm' %>
+  <%= stylesheet_link_tag "cpm_show.css", :plugin => 'redmine_cpm' %>
+<% end %>
+
+<h2><%=l(:"cpm.title_capacity_managment")%></h2>
+<%= render :partial => 'tabs' %>
+
+<%= render :partial => 'filters' %>
+
+<div id="resultado"></div>
