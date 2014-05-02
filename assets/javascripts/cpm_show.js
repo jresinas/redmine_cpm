@@ -66,7 +66,7 @@ $(document).ready(function(){
 		id = $(this)[0].id;
 		window.location.href = '/cpm_management/edit_form/'+id;
 */
-		id = $(this)[0].id;
+		id = $(this).attr('user_id');
 		from_date = $(this).attr('from_date');
 		to_date = $(this).attr('to_date');
 

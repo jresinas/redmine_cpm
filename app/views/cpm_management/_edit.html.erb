@@ -1,5 +1,5 @@
 <% @cpm = capacity %>
-<%= form_for @cpm, remote: true, url: {controller: "cpm_management", action: "edit_capacity", id: capacity.id} do |f| %>
+<%= form_for @cpm, remote: true, url: {controller: "cpm_management", action: "edit_capacity", id: capacity.id, start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects]} do |f| %>
 	<div class="splitcontentleft">
 		<div>
 			<%= f.label :project_id, l(:"cpm.label_project") %>

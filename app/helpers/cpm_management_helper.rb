@@ -13,11 +13,7 @@ module CpmManagementHelper
 	def get_column_name(type,index)
 		case type
 			when 'week'
-				l(:"cpm.label_week_n", :n => index+1)
-				date = Date.today.+index.week
-				startw = date.beginning_of_week
-				endw = date.end_of_week - 2.day
-				startw.strftime('%d/%m/%y')+" - "+endw.strftime('%d/%m/%y')
+				get_from_date(type,index)+" - "+get_to_date(type,index)
 			when 'month'
 				date = Date.today+index.month
 				l(:"cpm.months.#{date.strftime('%B')}")+" "+date.strftime('%Y')

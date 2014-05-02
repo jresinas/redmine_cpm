@@ -4,7 +4,7 @@
 	<%= render :partial => 'edit', locals: {capacity: c} %>
 <% end %>
 
-<%= form_for @cpm_user_capacity, remote: true, url: {controller: "cpm_management", action: "add_capacity"} do |f| %>
+<%= form_for @cpm_user_capacity, remote: true, url: {controller: "cpm_management", action: "add_capacity_modal", start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects]} do |f| %>
 	<%= f.hidden_field :user_id %>
 	<div class="splitcontentleft">
 		<div>

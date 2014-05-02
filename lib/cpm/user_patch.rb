@@ -21,27 +21,10 @@ module CPM
 
     module InstanceMethods
       def get_capacity(type,i,projects)
-        case type
-          when 'week'
-            date = Date.today + i.week
-           
-            start_day = date.beginning_of_week
-            end_day = start_day+4.day
-          when 'month'
-            date = Date.today + i.month
+        start_day = CpmDate.get_start_date(type,i)
+        end_day = CpmDate.get_due_date(type,i)
 
-            start_day = date.beginning_of_month
-            end_day = start_day+(date.end_of_month).day
-        end
-        
-
-        if projects.present?
-          query = "from_date <= ? AND to_date >= ? AND project_id IN ("+projects.join(',')+")"
-        else
-          query = "from_date <= ? AND to_date >= ?"
-        end
-
-        suma = self.cpm_user_capacity.where(query, end_day+1, start_day).inject(0) { |sum, e| 
+        suma = self.get_range_capacities(start_day,end_day,projects).inject(0) { |sum, e| 
           # Min and max day for capacity calculation
           iday = [Date.parse(e.from_date.to_s),start_day].max
           eday = [Date.parse(e.to_date.to_s),end_day].min
@@ -58,28 +41,23 @@ module CPM
 
       # Show tooltip message for the user row
       def get_tooltip(type,i,projects)
-        case type
-          when 'week'
-            date = Date.today + i.week
-           
-            start_day = date.beginning_of_week
-            end_day = start_day+4.day
-          when 'month'
-            date = Date.today + i.month
+        start_day = CpmDate.get_start_date(type,i)
+        end_day = CpmDate.get_due_date(type,i)
 
-            start_day = date.beginning_of_month
-            end_day = start_day+(date.end_of_month).day
-        end
+        self.get_range_capacities(start_day,end_day,projects).collect{|e| 
+          Project.find_by_id(e.project_id).name+": "+(e.capacity).to_s+"%. "+e.from_date.strftime('%d/%m/%y')+" - "+e.to_date.strftime('%d/%m/%y')
+        }.join("<br>")
+      end
 
-        if projects.present?
-          query = "from_date <= ? AND to_date >= ? AND project_id IN ("+projects.join(',')+")"
+      def get_range_capacities(start_date,due_date,projects_id=nil)
+        if projects_id.present?
+          query = "from_date <= ? AND to_date >= ? AND project_id IN ("+projects_id.join(',')+")"
         else
           query = "from_date <= ? AND to_date >= ?"
         end
 
-        self.cpm_user_capacity.where(query, end_day+1, start_day).collect{|e| Project.find_by_id(e.project_id).name+": "+(e.capacity).to_s+"%. "+e.from_date.strftime('%d/%m/%y')+" - "+e.to_date.strftime('%d/%m/%y')}.join("<br>")
+        self.cpm_user_capacity.where(query, due_date+1, start_date)
       end
-      
 =begin
       # Show tooltip message for the user row
       def get_tooltip(project)

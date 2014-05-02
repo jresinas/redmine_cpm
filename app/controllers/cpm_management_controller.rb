@@ -1,17 +1,7 @@
 class CpmManagementController < ApplicationController
   unloadable
-#  after_filter :flash_to_headers
 
   helper :cpm_management
-=begin
-  def flash_to_headers
-    return unless request.xhr?
-    response.headers['X-Message'] = flash[:error] unless flash[:error].blank?
-    response.headers['X-Message'] = flash[:notice] unless flash[:notice].blank?
-
-    flash.discard
-  end
-=end
 
   # Main page for capacities search and management
   def show
@@ -31,14 +21,27 @@ class CpmManagementController < ApplicationController
     @cpm_user_capacity = CpmUserCapacity.new
   end
 
+  def add_capacity_assignment
+    add_capacity
+    redirect_to action: 'assignments'
+  end
+
+  def add_capacity_modal
+    add_capacity
+    redirect_to action:'edit_form', 
+                    user_id:@cpm_user_capacity.user_id, 
+                    from_date:params[:start_date], 
+                    to_date:params[:due_date], 
+                    projects:params[:projects]
+  end
+
   # Add new capacity to an user for a project
   def add_capacity
   	@cpm_user_capacity = CpmUserCapacity.new(params[:cpm_user_capacity])
 
   	if @cpm_user_capacity.save
-  		flash[:notice] = "Se ha guardado con exito"
-  		redirect_to action: 'edit_form/'+(@cpm_user_capacity.user_id).to_s  #action:'assignments' #request.referer
-  	else
+  		flash[:notice] = "Se ha guardado con exito"   
+    else
   		error_msg = ""
   		
       # get errors list
@@ -50,9 +53,7 @@ class CpmManagementController < ApplicationController
 	  	end
 
 	  	flash[:error] = error_msg
-
-  		redirect_to action: 'edit_form/'+(@cpm_user_capacity.user_id).to_s #'assignments'
-  	end
+    end
   end
 
   # Capacity search result
@@ -85,17 +86,20 @@ class CpmManagementController < ApplicationController
   # Capacity edit form
   def edit_form
     user = User.find_by_id(params[:user_id])
+    logger.info user.inspect
     #logger.info JSON.parse(params[:projects]).inspect
     logger.info params[:projects].inspect
     logger.info params[:from_date].inspect
     logger.info params[:to_date].inspect
-
+    from_date = Date.strptime(params[:from_date], "%d/%m/%y")
+    to_date = Date.strptime(params[:to_date], "%d/%m/%y")
 
     # load pojects options
     ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     @projects_for_selection = Project.where("id NOT IN (?)", ignored_projects).collect{|p| [p.name,p.id]}
 
-    @capacities = user.cpm_user_capacity.where('to_date >= ?', Date.today)
+    @capacities = user.get_range_capacities(from_date,to_date,params[:projects])
+    #user.cpm_user_capacity.where('to_date >= ?', Date.today)
 
     @cpm_user_capacity = CpmUserCapacity.new
     @cpm_user_capacity.user_id = params[:user_id]
@@ -108,9 +112,14 @@ class CpmManagementController < ApplicationController
     cpm = CpmUserCapacity.find_by_id(params[:id])
     data = params[:cpm_user_capacity]
     data[:project_id] = data[:project_id].to_i
+
     if cpm.update_attributes(data)
       flash[:notice] = "Se ha modificado con exito"
-      redirect_to action:'edit_form/'+(cpm.user_id).to_s
+      redirect_to action:'edit_form', 
+                  user_id:cpm.user_id, 
+                  from_date:params[:start_date], 
+                  to_date:params[:due_date], 
+                  projects:params[:projects]
     else
       error_msg = ""
       
@@ -124,7 +133,11 @@ class CpmManagementController < ApplicationController
 
       flash[:error] = error_msg
 
-      redirect_to action:'edit_form/'+(cpm.user_id).to_s
+      redirect_to action:'edit_form', 
+                  user_id:cpm.user_id, 
+                  from_date:params[:start_date], 
+                  to_date:params[:due_date], 
+                  projects:params[:projects]
     end
   end
 
