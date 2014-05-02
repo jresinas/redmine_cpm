@@ -60,7 +60,12 @@ class CpmManagementController < ApplicationController
     if params[:users].present?
       @users = User.where("id IN (?)", params[:users])
     elsif params[:projects].present?
-      @users = Project.where("id IN ("+params[:projects].join(',')+")").collect{|p| p.members.collect{|m| User.find_by_id(m.user_id)}}.flatten.uniq_by{|u| u.id}
+      projects = Project.where("id IN ("+params[:projects].join(',')+")")
+
+      members = projects.collect{|p| p.members.collect{|m| m.user_id}}.flatten
+      time_entries = projects.collect{|p| p.time_entries.collect{|te| te.user_id}}.flatten
+
+      @users = User.where("id IN (?)", (members+time_entries).uniq)
     else
       @users = []
     end
@@ -80,6 +85,11 @@ class CpmManagementController < ApplicationController
   # Capacity edit form
   def edit_form
     user = User.find_by_id(params[:user_id])
+    #logger.info JSON.parse(params[:projects]).inspect
+    logger.info params[:projects].inspect
+    logger.info params[:from_date].inspect
+    logger.info params[:to_date].inspect
+
 
     # load pojects options
     ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
@@ -124,7 +134,7 @@ class CpmManagementController < ApplicationController
     ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
     options = User.where("id NOT IN (?)", ignored_users).collect{|u| "<option value='"+(u.id).to_s+"'>"+u.login+"</option>"}
 
-    render text: l(:"cpm.label_users")+" <select name='users[]' class='filter_users' multiple>"+options.join('')+"</select>"
+    render text: l(:"cpm.label_users")+" <select name='users[]' class='filter_users' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_projects_filter
@@ -132,7 +142,7 @@ class CpmManagementController < ApplicationController
     ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     options = Project.where("id NOT IN (?)", ignored_projects).collect{|p| "<option value='"+(p.id).to_s+"'>"+p.name+"</option>"}
 
-    render text: l(:"cpm.label_projects")+" <select name='projects[]' class='filter_projects' multiple>"+options.join('')+"</select>"
+    render text: l(:"cpm.label_projects")+" <select name='projects[]' class='filter_projects' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_time_unit_filter

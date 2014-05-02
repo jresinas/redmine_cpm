@@ -23,4 +23,26 @@ module CpmManagementHelper
 				l(:"cpm.months.#{date.strftime('%B')}")+" "+date.strftime('%Y')
 		end
 	end
+
+	def get_from_date(type,index)
+		case type
+			when 'week'
+				date = Date.today.+index.week
+				(date.beginning_of_week).strftime('%d/%m/%y')
+			when 'month'
+				date = Date.today+index.month
+				(date.beginning_of_month).strftime('%d/%m/%y')
+		end
+	end
+
+	def get_to_date(type,index)
+		case type
+			when 'week'
+				date = Date.today.+index.week
+				(date.end_of_week - 2.day).strftime('%d/%m/%y')
+			when 'month'
+				date = Date.today+index.month
+				(date.end_of_month).strftime('%d/%m/%y')
+		end
+	end
 end

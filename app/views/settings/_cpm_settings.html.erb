@@ -5,13 +5,15 @@
 	    <label><%=l(:"cpm.label_ignored_users")%></label>
 	    <%= select_tag 'settings[ignored_users]',
 	        options_from_collection_for_select(User.all, :id, :login, (@settings['ignored_users'] || [])),
-	        :multiple => true %>
+	        :multiple => true,
+	        :size => 10 %>
 		</p>
 		<p>
 	    <label><%=l(:"cpm.label_ignored_projects")%></label>
 	    <%= select_tag 'settings[ignored_projects]',
-	        options_from_collection_for_select(User.all, :id, :login, (@settings['ignored_projects'] || [])),
-	        :multiple => true %>
+	        options_from_collection_for_select(Project.all, :id, :name, (@settings['ignored_projects'] || [])),
+	        :multiple => true,
+	        :size => 10 %>
 		</p>
 	</fielset>
 </div>

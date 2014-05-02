@@ -67,11 +67,20 @@ $(document).ready(function(){
 		window.location.href = '/cpm_management/edit_form/'+id;
 */
 		id = $(this)[0].id;
+		from_date = $(this).attr('from_date');
+		to_date = $(this).attr('to_date');
+
 		html = "";
+		selected_projects = [];
+
+		if ($('#filter_projects').is(':checked')){
+			selected_projects = $('select[name="projects[]"]').val();
+		}
 
 		$.ajax({
 			url: '/cpm_management/edit_form/'+id,
 			async: false,
+			data: {projects: selected_projects, from_date: from_date, to_date: to_date},
 			success: function(filter){
 				html = filter;
 			}
