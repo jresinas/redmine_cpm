@@ -40,7 +40,7 @@ class CpmManagementController < ApplicationController
   	@cpm_user_capacity = CpmUserCapacity.new(params[:cpm_user_capacity])
 
   	if @cpm_user_capacity.save
-  		flash[:notice] = "Se ha guardado con exito"   
+  		flash[:notice] = l(:"cpm.msg_save_success")  
     else
   		error_msg = ""
   		
@@ -122,7 +122,7 @@ class CpmManagementController < ApplicationController
     data[:project_id] = data[:project_id].to_i
 
     if cpm.update_attributes(data)
-      flash[:notice] = "Se ha modificado con exito"
+      flash[:notice] = l(:"cpm.msg_edit_success")
     else
       error_msg = ""
       
@@ -138,7 +138,7 @@ class CpmManagementController < ApplicationController
     end
 
     if !cpm.check_capacity
-      flash[:warning] = "La capacidad del usuario a superado el 100%"
+      flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
     end
 
     redirect_to action:'edit_form', 

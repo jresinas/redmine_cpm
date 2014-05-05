@@ -31,7 +31,7 @@ class CpmUserCapacity < ActiveRecord::Base
 
     end
 
-    result #:msg_capacity_higher_than_100
+    result
   end
 
   def get_total_capacity(user_id, date)
