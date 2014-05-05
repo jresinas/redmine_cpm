@@ -1,6 +1,5 @@
 require 'dispatcher' unless Rails::VERSION::MAJOR >= 3
-# Patches Redmine's Issue dynamically.  Adds relationships
-# Issue +has_one+ to Incident and ImprovementAction
+
 module CPM
   unloadable
   module UserPatch
@@ -58,12 +57,6 @@ module CPM
 
         self.cpm_user_capacity.where(query, due_date+1, start_date)
       end
-=begin
-      # Show tooltip message for the user row
-      def get_tooltip(project)
-        cpm = CpmUserCapacity.where('user_id = ?',self.id).collect{|e| Project.find_by_id(e.project_id).name+": "+(e.capacity).to_s+". "+e.from_date.strftime('%d/%m/%y')+" - "+e.to_date.strftime('%d/%m/%y')}.join("<br>")       
-      end
-=end
     end
   end
 end
