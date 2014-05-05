@@ -35,6 +35,7 @@ $(document).ready(function(){
 	// Show capacities search result
 	$('#find_capacities').on('ajax:success', function(data, status, xhr){
 		$('#resultado').html(status);
+		apply_options()
 	});
 
 	// Click on option "Hide empty rows"
@@ -55,8 +56,6 @@ $(document).ready(function(){
 		} else {
 			view_numbers();
 		}
-
-		strip_table("capacity_results");
 	});
 
 
@@ -178,4 +177,20 @@ function view_numbers(){
 			});
 		}
 	});
+}
+
+function apply_options(){
+	if ($('#bar_view').is(':checked')){
+		view_bars();
+	} else {
+		view_numbers();
+	}
+
+	if ($('#hide_empty_users').is(':checked')){
+		hide_empty_results();
+	} else {
+		show_all_results();
+	}
+
+	strip_table("capacity_results");
 }

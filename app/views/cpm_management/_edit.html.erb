@@ -13,12 +13,12 @@
 	<div class="splitcontentright">
 		<div>
 			<%= f.label :from_date, l(:"cpm.label_start_date") %>
-			<%= f.text_field :from_date, id: "cpm_user_capacity_from_date_"+(capacity.id).to_s %>
+			<%= f.text_field :from_date, :value => @cpm.from_date.strftime('%Y-%m-%d'), id: "cpm_user_capacity_from_date_"+(capacity.id).to_s %>
 			<%= calendar_for('cpm_user_capacity_from_date_'+(capacity.id).to_s) %>
 		</div>
 		<div>
 			<%= f.label :to_date, l(:"cpm.label_due_date") %>
-			<%= f.text_field :to_date, id: "cpm_user_capacity_to_date_"+(capacity.id).to_s %>
+			<%= f.text_field :to_date, :value => @cpm.to_date.strftime('%Y-%m-%d'), id: "cpm_user_capacity_to_date_"+(capacity.id).to_s %>
 			<%= calendar_for('cpm_user_capacity_to_date_'+(capacity.id).to_s) %>
 		</div>
 		<div>
