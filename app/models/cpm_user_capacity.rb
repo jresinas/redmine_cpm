@@ -32,8 +32,9 @@ class CpmUserCapacity < ActiveRecord::Base
     result = true
 
     user = User.find_by_id(self.user_id)
-    days = (self.to_date).day - (self.from_date).day
+    days = (Date.parse(self.to_date.to_s) - Date.parse(self.from_date.to_s)).to_i
 
+begin
     (0..days).each do |i|
       date = self.from_date + i.day
 
@@ -42,7 +43,7 @@ class CpmUserCapacity < ActiveRecord::Base
       end
 
     end
-
+end
     result
   end
 
