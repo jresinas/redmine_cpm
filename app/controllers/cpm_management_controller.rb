@@ -41,22 +41,12 @@ class CpmManagementController < ApplicationController
 
   	if @cpm_user_capacity.save
   		flash[:notice] = l(:"cpm.msg_save_success")  
+
+      if !@cpm_user_capacity.check_capacity
+        flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
+      end
     else
-  		error_msg = ""
-  		
-      # get errors list
-  		@cpm_user_capacity.errors.full_messages.each do |msg|
-  			if error_msg != ""
-  				error_msg << "<br>"
-  			end
-	  		error_msg << msg
-	  	end
-
-	  	flash[:error] = error_msg
-    end
-
-    if !@cpm_user_capacity.check_capacity
-      flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
+  		flash[:error] = @cpm_user_capacity.get_error_message()
     end
   end
 
@@ -127,22 +117,12 @@ class CpmManagementController < ApplicationController
 
     if cpm.update_attributes(data)
       flash[:notice] = l(:"cpm.msg_edit_success")
-    else
-      error_msg = ""
-      
-      # get errors list
-      cpm.errors.full_messages.each do |msg|
-        if error_msg != ""
-          error_msg << "<br>"
-        end
-        error_msg << msg
+
+      if !cpm.check_capacity
+        flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
       end
-
-      flash[:error] = error_msg
-    end
-
-    if !cpm.check_capacity
-      flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
+    else
+      flash[:error] = cpm.get_error_message()
     end
 
     redirect_to action:'edit_form', 
