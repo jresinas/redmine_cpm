@@ -5,7 +5,7 @@ class CpmManagementController < ApplicationController
 
   # Main page for capacities search and management
   def show
-    @filters = [['','default']] + ['users','projects','time_unit','time_unit_num'].collect{|f| [l(:"cpm.label_#{f}"),f]}
+    @filters = [['','default']] + ['users','groups','projects','time_unit','time_unit_num'].collect{|f| [l(:"cpm.label_#{f}"),f]}
   end
 
   # Form for add capacities to users
@@ -58,17 +58,29 @@ class CpmManagementController < ApplicationController
 
   # Capacity search result
   def planning
+    @users = []
+
+    # add users specified by users filter
     if params[:users].present?
-      @users = User.where("id IN (?)", params[:users])
-    elsif params[:projects].present?
+      @users += User.where("id IN (?)", params[:users])
+    end
+
+    # add users specified by groups filter
+    if params[:groups].present?
+      @users += Group.where("id IN (?)", params[:groups]).collect{|g| g.users}.flatten
+    end
+
+    # join users
+    @users = @users.uniq
+
+    # get users specified by project if there are not using filter for users or groups
+    if params[:projects].present? && !params[:users].present? && !params[:groups].present?
       projects = Project.where("id IN ("+params[:projects].join(',')+")")
 
       members = projects.collect{|p| p.members.collect{|m| m.user_id}}.flatten
       time_entries = projects.collect{|p| p.time_entries.collect{|te| te.user_id}}.flatten
 
       @users = User.where("id IN (?)", (members+time_entries).uniq)
-    else
-      @users = []
     end
 
     @projects = params[:projects]
@@ -86,11 +98,7 @@ class CpmManagementController < ApplicationController
   # Capacity edit form
   def edit_form
     user = User.find_by_id(params[:user_id])
-    logger.info user.inspect
-    #logger.info JSON.parse(params[:projects]).inspect
-    logger.info params[:projects].inspect
-    logger.info params[:from_date].inspect
-    logger.info params[:to_date].inspect
+    
     from_date = Date.strptime(params[:from_date], "%d/%m/%y")
     to_date = Date.strptime(params[:to_date], "%d/%m/%y")
 
@@ -115,11 +123,6 @@ class CpmManagementController < ApplicationController
 
     if cpm.update_attributes(data)
       flash[:notice] = "Se ha modificado con exito"
-      redirect_to action:'edit_form', 
-                  user_id:cpm.user_id, 
-                  from_date:params[:start_date], 
-                  to_date:params[:due_date], 
-                  projects:params[:projects]
     else
       error_msg = ""
       
@@ -132,13 +135,17 @@ class CpmManagementController < ApplicationController
       end
 
       flash[:error] = error_msg
-
-      redirect_to action:'edit_form', 
-                  user_id:cpm.user_id, 
-                  from_date:params[:start_date], 
-                  to_date:params[:due_date], 
-                  projects:params[:projects]
     end
+
+    if !cpm.check_capacity
+      flash[:warning] = "La capacidad del usuario a superado el 100%"
+    end
+
+    redirect_to action:'edit_form', 
+                user_id:cpm.user_id, 
+                from_date:params[:start_date], 
+                to_date:params[:due_date], 
+                projects:params[:projects]
   end
 
 # Search filters
@@ -148,6 +155,13 @@ class CpmManagementController < ApplicationController
     options = User.where("id NOT IN (?)", ignored_users).collect{|u| "<option value='"+(u.id).to_s+"'>"+u.login+"</option>"}
 
     render text: l(:"cpm.label_users")+" <select name='users[]' class='filter_users' size=10 multiple>"+options.join('')+"</select>"
+  end
+
+  def get_groups_filter
+    # load users options
+    options = Group.all.collect{|g| "<option value='"+(g.id).to_s+"'>"+g.name+"</option>"}
+
+    render text: l(:"cpm.label_groups")+" <select name='groups[]' class='filter_groups' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_projects_filter

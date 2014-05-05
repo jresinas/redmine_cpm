@@ -18,6 +18,9 @@ es:
     title_results: "Resultados"
     title_capacity_assignment: "Asignación de capacidades"
     label_user: "Usuario"
+    label_users: "Usuarios"
+    label_group: "Grupo"
+    label_groups: "Grupos"
     label_project: "Proyecto"
     label_projects: "Proyectos"
     label_capacity: "Capacidad"
@@ -34,7 +37,6 @@ es:
     label_month: "Mes"
 
     button_find: "Buscar"
-    label_users: "Usuarios"
     label_week_n: "Semana %{n}"
     label_month_n: "Mes %{n}"
 
@@ -51,3 +53,7 @@ es:
       October: "Octubre"
       November: "Noviembre"
       December: "Diciembre"
+  activerecord:
+    errors:
+      messages:
+        msg_to_date_after_from_date: tiene que ser mayor o igual que la fecha de inicio

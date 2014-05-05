@@ -1,2 +1,6 @@
 # English strings go here for Rails i18n
 en:
+  activerecord:
+    errors:
+      messages:
+        msg_to_date_after_from_date: must be later than start date
