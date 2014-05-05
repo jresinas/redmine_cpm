@@ -54,6 +54,10 @@ class CpmManagementController < ApplicationController
 
 	  	flash[:error] = error_msg
     end
+
+    if !@cpm_user_capacity.check_capacity
+      flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
+    end
   end
 
   # Capacity search result

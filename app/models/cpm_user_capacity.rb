@@ -34,16 +34,14 @@ class CpmUserCapacity < ActiveRecord::Base
     user = User.find_by_id(self.user_id)
     days = (Date.parse(self.to_date.to_s) - Date.parse(self.from_date.to_s)).to_i
 
-begin
     (0..days).each do |i|
       date = self.from_date + i.day
 
       if get_total_capacity(self.user_id, date) > 100    
         result = false
       end
-
     end
-end
+
     result
   end
 
