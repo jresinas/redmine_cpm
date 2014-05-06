@@ -36,6 +36,7 @@ $(document).ready(function(){
 	$('#find_capacities').on('ajax:success', function(data, status, xhr){
 		$('#capacity_modal').html(status);
 		apply_options();
+		clear_disabled_filters();
 	});
 
 	// Click on option "Hide empty rows"
@@ -193,4 +194,13 @@ function apply_options(){
 	}
 
 	strip_table("capacity_results");
+}
+
+function clear_disabled_filters(){
+	$.each($('.filter'),function(index,filter){
+		if (!$('input.enable_filter',filter).is(':checked')){
+			$('option[value='+filter.id+']').prop('disabled',false);
+			$(filter).remove();
+		}
+	});
 }
