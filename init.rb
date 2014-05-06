@@ -1,4 +1,6 @@
 require 'cpm/user_patch'
+require 'cpm/project_patch'
+require 'cpm/hooks'
 
 Redmine::Plugin.register :redmine_cpm do
   name 'Capacity Planning Manager'

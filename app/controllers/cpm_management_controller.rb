@@ -12,11 +12,11 @@ class CpmManagementController < ApplicationController
   def assignments
     # load users options
     ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
-    @users_for_selection = User.where("id NOT IN (?)", ignored_users).collect{|u| [u.login,u.id]}
+    @users_for_selection = User.where("id NOT IN (?)", ignored_users).sort_by{|u| u.login}.collect{|u| [u.login,u.id]}
 
     # load pojects options
     ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
-    @projects_for_selection = Project.where("id NOT IN (?)", ignored_projects).collect{|p| [p.name,p.id]}
+    @projects_for_selection = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| [p.name,p.id]}
 
     @cpm_user_capacity = CpmUserCapacity.new
   end
@@ -65,7 +65,7 @@ class CpmManagementController < ApplicationController
     end
 
     # join users
-    @users = @users.uniq
+    @users = @users.uniq.sort_by{|u| u.login}
 
     # get users specified by project if there are not using filter for users or groups
     if params[:projects].present? && !params[:users].present? && !params[:groups].present?
@@ -74,7 +74,7 @@ class CpmManagementController < ApplicationController
       members = projects.collect{|p| p.members.collect{|m| m.user_id}}.flatten
       time_entries = projects.collect{|p| p.time_entries.collect{|te| te.user_id}}.flatten
 
-      @users = User.where("id IN (?)", (members+time_entries).uniq)
+      @users = User.where("id IN (?)", (members+time_entries).uniq).sort_by{|u| u.login}
     end
 
     @projects = params[:projects]
@@ -98,7 +98,7 @@ class CpmManagementController < ApplicationController
 
     # load pojects options
     ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
-    @projects_for_selection = Project.where("id NOT IN (?)", ignored_projects).collect{|p| [p.name,p.id]}
+    @projects_for_selection = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| [p.name,p.id]}
 
     @capacities = user.get_range_capacities(from_date,to_date,params[:projects])
     #user.cpm_user_capacity.where('to_date >= ?', Date.today)
@@ -136,14 +136,14 @@ class CpmManagementController < ApplicationController
   def get_users_filter
     # load users options
     ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
-    options = User.where("id NOT IN (?)", ignored_users).collect{|u| "<option value='"+(u.id).to_s+"'>"+u.login+"</option>"}
+    options = User.where("id NOT IN (?)", ignored_users).sort_by{|u| u.login}.collect{|u| "<option value='"+(u.id).to_s+"'>"+u.login+"</option>"}
 
     render text: l(:"cpm.label_users")+" <select name='users[]' class='filter_users' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_groups_filter
     # load users options
-    options = Group.all.collect{|g| "<option value='"+(g.id).to_s+"'>"+g.name+"</option>"}
+    options = Group.all.sort_by{|g| g.name}.collect{|g| "<option value='"+(g.id).to_s+"'>"+g.name+"</option>"}
 
     render text: l(:"cpm.label_groups")+" <select name='groups[]' class='filter_groups' size=10 multiple>"+options.join('')+"</select>"
   end
@@ -151,7 +151,7 @@ class CpmManagementController < ApplicationController
   def get_projects_filter
     # load projects options
     ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
-    options = Project.where("id NOT IN (?)", ignored_projects).collect{|p| "<option value='"+(p.id).to_s+"'>"+p.name+"</option>"}
+    options = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| "<option value='"+(p.id).to_s+"'>"+p.name+"</option>"}
 
     render text: l(:"cpm.label_projects")+" <select name='projects[]' class='filter_projects' size=10 multiple>"+options.join('')+"</select>"
   end

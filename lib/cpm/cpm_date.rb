@@ -4,6 +4,8 @@ module CPM
 
     def self.get_start_date(time_unit,index)
       case time_unit
+        when 'day'
+          start_date = Date.today    
         when 'week'
           date = Date.today + index.week
           start_date = date.beginning_of_week
@@ -16,6 +18,8 @@ module CPM
 
     def self.get_due_date(time_unit,index)
       case time_unit
+        when 'day'
+          start_date = Date.today
         when 'week'
           date = Date.today + index.week
           due_date = date.end_of_week-2

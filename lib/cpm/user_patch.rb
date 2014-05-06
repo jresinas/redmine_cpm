@@ -19,7 +19,7 @@ module CPM
     end
 
     module InstanceMethods
-      def get_capacity(type,i,projects)
+      def get_capacity(type,i,projects=nil)
         start_day = CpmDate.get_start_date(type,i)
         end_day = CpmDate.get_due_date(type,i)
 
@@ -38,16 +38,7 @@ module CPM
         suma
       end
 
-      # Show tooltip message for the user row
-      def get_tooltip(type,i,projects)
-        start_day = CpmDate.get_start_date(type,i)
-        end_day = CpmDate.get_due_date(type,i)
-
-        self.get_range_capacities(start_day,end_day,projects).collect{|e| 
-          Project.find_by_id(e.project_id).name+": "+(e.capacity).to_s+"%. "+e.from_date.strftime('%d/%m/%y')+" - "+e.to_date.strftime('%d/%m/%y')
-        }.join("<br>")
-      end
-
+      # Get all capacities from start_date to due_date and which belong to a project (optional)
       def get_range_capacities(start_date,due_date,projects_id=nil)
         if projects_id.present?
           query = "from_date <= ? AND to_date >= ? AND project_id IN ("+projects_id.join(',')+")"
@@ -56,6 +47,34 @@ module CPM
         end
 
         self.cpm_user_capacity.where(query, due_date+1, start_date)
+      end
+
+      # Show tooltip message for the user row
+      def get_tooltip(type,i,projects)
+        start_day = CpmDate.get_start_date(type,i)
+        end_day = CpmDate.get_due_date(type,i)
+
+        self.get_range_capacities(start_day,end_day,projects).collect{|e| 
+          e.project.name+": "+(e.capacity).to_s+"%. "+e.from_date.strftime('%d/%m/%y')+" - "+e.to_date.strftime('%d/%m/%y')
+        }.join("<br>")
+      end
+
+      # Get html capacity summary for user's welcome page
+      def get_capacity_summary
+        today = Date.today
+        capacities = self.get_range_capacities(today,today)
+
+        summary = ""
+
+        if capacities.any?
+          summary += "<ul>"
+          capacities.each do |c|
+            summary += "<li><a href='projects/"+c.project.identifier+"'>"+c.project.name+"</a> - "+(c.capacity).to_s+"%</li>"
+          end
+          summary += "</ul>"
+        end
+
+        summary.html_safe
       end
     end
   end

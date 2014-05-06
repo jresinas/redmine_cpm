@@ -1,5 +1,6 @@
 class CpmUserCapacity < ActiveRecord::Base
 	belongs_to :user
+  belongs_to :project
 
 #  before_save :process_dates
 
