@@ -9,6 +9,7 @@ es:
     title_black_lists: "Listas negras"
     label_ignored_users: "Usuarios ignorados"
     label_ignored_projects: "Proyectos ignorados"
+    label_ignored_groups: "Grupos ignorados"
 
     label_assignments: "Asignaciones"
     label_management: "Gestión"
@@ -24,8 +25,8 @@ es:
     label_project: "Proyecto"
     label_projects: "Proyectos"
     label_capacity: "Capacidad"
-    label_start_date: "Fecha de inicio"
-    label_due_date: "Fecha de fin"
+    label_start_date: "Inicio"
+    label_due_date: "Fin"
     button_assign: "Asignar"
 
     label_hide_empty_users: "Ocultar usuarios vacios"

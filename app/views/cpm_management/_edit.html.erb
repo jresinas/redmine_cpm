@@ -1,29 +1,27 @@
 <% @cpm = capacity %>
-<%= form_for @cpm, remote: true, url: {controller: "cpm_management", action: "edit_capacity", id: capacity.id, start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects]} do |f| %>
-	<div class="splitcontentleft">
-		<div>
+<div class="assignment_form">
+	<%= form_for @cpm, remote: true, url: {controller: "cpm_management", action: "edit_capacity", id: capacity.id, start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects]} do |f| %>
+		<span>
 			<%= f.label :project_id, l(:"cpm.label_project") %>
-			<%= f.select(:project_id, options_for_select(@projects_for_selection, @cpm.project_id)) %>
-		</div>
-		<div>
+			<%= f.select(:project_id, options_for_select(@projects_for_selection, @cpm.project_id), {}, {:style => "width:150px;"}) %>
+		</span>
+		<span>
 			<%= f.label :capacity, l(:"cpm.label_capacity") %>
-			<%= f.text_field :capacity %>
-		</div>
-	</div>
-	<div class="splitcontentright">
-		<div>
+			<%= f.text_field :capacity, :size => 2 %>%
+		</span>
+		<span>
 			<%= f.label :from_date, l(:"cpm.label_start_date") %>
-			<%= f.text_field :from_date, :value => @cpm.from_date.strftime('%Y-%m-%d'), id: "cpm_user_capacity_from_date_"+(capacity.id).to_s %>
+			<%= f.text_field :from_date, :value => @cpm.from_date.strftime('%Y-%m-%d'), :id => "cpm_user_capacity_from_date_"+(capacity.id).to_s, size: 10 %>
 			<%= calendar_for('cpm_user_capacity_from_date_'+(capacity.id).to_s) %>
-		</div>
-		<div>
+		</span>
+		<span>
 			<%= f.label :to_date, l(:"cpm.label_due_date") %>
-			<%= f.text_field :to_date, :value => @cpm.to_date.strftime('%Y-%m-%d'), id: "cpm_user_capacity_to_date_"+(capacity.id).to_s %>
+			<%= f.text_field :to_date, :value => @cpm.to_date.strftime('%Y-%m-%d'), :id => "cpm_user_capacity_to_date_"+(capacity.id).to_s, size: 10 %>
 			<%= calendar_for('cpm_user_capacity_to_date_'+(capacity.id).to_s) %>
-		</div>
-		<div>
+		</span>
+		<span>
 			<%= f.submit l(:"cpm.button_assign") %>
-		</div>
-	</div>
-<% end %>
-<div style="clear: both;"></div>
+		</span>
+		<a href="#" class="icon icon-del" data-confirm="¿Está seguro?" data-method="delete" rel="nofollow">Borrar</a>
+	<% end %>
+</div>

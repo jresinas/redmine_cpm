@@ -1,35 +1,35 @@
-<%= render_flash_messages %>
+<div id="capacity_modal_content"
+	<%= render_flash_messages %>
 
-<% @capacities.each do |c| %>
-	<%= render :partial => 'edit', locals: {capacity: c} %>
-<% end %>
+	<% @capacities.each do |c| %>
+		<%= render :partial => 'edit', locals: {capacity: c} %>
+	<% end %>
 
-<%= form_for @cpm_user_capacity, remote: true, url: {controller: "cpm_management", action: "add_capacity_modal", start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects]} do |f| %>
-	<%= f.hidden_field :user_id %>
-	<div class="splitcontentleft">
+	<div id="new_assignment" class="assignment_form">
+	<h3>Nueva asignación</h3>
+	<%= form_for @cpm_user_capacity, remote: true, url: {controller: "cpm_management", action: "add_capacity_modal", start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects]} do |f| %>
+		<%= f.hidden_field :user_id %>
 		<div>
-			<%= f.label :project_id, l(:"cpm.label_project") %>
-			<%= f.select(:project_id, options_for_select(@projects_for_selection)) %>
-		</div>
-		<div>
-			<%= f.label :capacity, l(:"cpm.label_capacity") %>
-			<%= f.text_field :capacity %>
-		</div>
+			<span>
+				<%= f.label :project_id, l(:"cpm.label_project") %>
+				<%= f.select(:project_id, options_for_select(@projects_for_selection,@default_project),{},{:style => "width:150px;"}) %>
+			</span>
+			<span>
+				<%= f.label :capacity, l(:"cpm.label_capacity") %>
+				<%= f.text_field :capacity, :size => 2 %>%
+			</span>
+			<span>
+				<%= f.label :from_date, l(:"cpm.label_start_date") %>
+				<%= f.text_field :from_date, :size => 10 %>
+				<%= calendar_for('cpm_user_capacity_from_date') %>
+			</span>
+			<span>
+				<%= f.label :to_date, l(:"cpm.label_due_date") %>
+				<%= f.text_field :to_date, :size => 10 %>
+				<%= calendar_for('cpm_user_capacity_to_date') %>
+			</span>
+				<%= f.submit l(:"cpm.button_assign") %>
+		</span>
+	<% end %>
 	</div>
-	<div class="splitcontentright">
-		<div>
-			<%= f.label :from_date, l(:"cpm.label_start_date") %>
-			<%= f.text_field :from_date %>
-			<%= calendar_for('cpm_user_capacity_from_date') %>
-		</div>
-		<div>
-			<%= f.label :to_date, l(:"cpm.label_due_date") %>
-			<%= f.text_field :to_date %>
-			<%= calendar_for('cpm_user_capacity_to_date') %>
-		</div>
-		<div>
-			<%= f.submit l(:"cpm.button_assign") %>
-		</div>
-	</div>
-<% end %>
-<div style="clear: both;"></div>
+</div>

@@ -1,4 +1,18 @@
-.bar_background{
+td div.bar_background{
+background: rgb(255,168,76); /* Old browsers */
+background: -moz-linear-gradient(top, rgba(255,168,76,1) 0%, rgba(255,123,13,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,168,76,1)), color-stop(100%,rgba(255,123,13,1))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, rgba(255,168,76,1) 0%,rgba(255,123,13,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, rgba(255,168,76,1) 0%,rgba(255,123,13,1) 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, rgba(255,168,76,1) 0%,rgba(255,123,13,1) 100%); /* IE10+ */
+background: linear-gradient(to bottom, rgba(255,168,76,1) 0%,rgba(255,123,13,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffa84c', endColorstr='#ff7b0d',GradientType=0 ); /* IE6-9 */
+	height:50px;
+	width:100%;
+
+}
+
+td.alert div.bar_background{
 	background: #ff3019; /* Old browsers */
 background: -moz-linear-gradient(top, #ff3019 0%, #cf0404 100%); /* FF3.6+ */
 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ff3019), color-stop(100%,#cf0404)); /* Chrome,Safari4+ */
@@ -12,7 +26,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3019', end
 
 }
 
-.bar_empty{
+td div.bar_empty{
 background: #cfe7fa; /* Old browsers */
 background: -moz-linear-gradient(top, #cfe7fa 0%, #6393c1 100%); /* FF3.6+ */
 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cfe7fa), color-stop(100%,#6393c1)); /* Chrome,Safari4+ */
@@ -22,4 +36,38 @@ background: -ms-linear-gradient(top, #cfe7fa 0%,#6393c1 100%); /* IE10+ */
 background: linear-gradient(to bottom, #cfe7fa 0%,#6393c1 100%); /* W3C */
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cfe7fa', endColorstr='#6393c1',GradientType=0 ); /* IE6-9 */
 	width:100%;
+}
+
+#capacity_results tbody tr.odd:hover{
+	background-color:#f6f7f8 !important; 
+}
+
+#capacity_results tbody tr.even:hover{
+	background-color:#fff !important;
+}
+
+#capacity_results tbody td:hover{
+	background-color:#ffffdd;
+}
+
+
+#new_assignment{
+	margin-top:15px;
+}
+
+div.assignment_form{
+	margin-top:8px;
+}
+
+div.assignment_form span{
+	margin-right:10px;
+}
+
+.alert{
+	color:red;
+}
+
+#capacity_modal_content{
+	margin-top:10px;
+	margin-bottom:15px;
 }

@@ -13,7 +13,7 @@ $(document).ready(function(){
 			}
 		});
 
-		$('#active_filters').append("<div><input id='filter_"+select_value+"' class='enable_filter' type='checkbox' checked /> "+html+"</div>");
+		$('#active_filters').append("<div id='"+select_value+"' class='filter'><input id='filter_"+select_value+"' class='enable_filter' type='checkbox' checked /> "+html+"</div>");
 		
 		$('option[value='+$(this).val()+']').prop('disabled',true);
 		$('#select_filter').val("default");
@@ -34,8 +34,8 @@ $(document).ready(function(){
 
 	// Show capacities search result
 	$('#find_capacities').on('ajax:success', function(data, status, xhr){
-		$('#resultado').html(status);
-		apply_options()
+		$('#capacity_modal').html(status);
+		apply_options();
 	});
 
 	// Click on option "Hide empty rows"
@@ -86,7 +86,7 @@ $(document).ready(function(){
 		});
 
 		$('#dialog').html(html);
-		$('#dialog').dialog({width:800, close: function(){ 
+		$('#dialog').dialog({width:870, modal:true, close: function(){ 
 			$('.ui-dialog').remove();
 			$('#find_capacities').submit();
 		} });

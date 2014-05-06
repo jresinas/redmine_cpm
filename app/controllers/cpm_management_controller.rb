@@ -92,6 +92,7 @@ class CpmManagementController < ApplicationController
   # Capacity edit form
   def edit_form
     user = User.find_by_id(params[:user_id])
+    projects = params[:projects]
     
     from_date = Date.strptime(params[:from_date], "%d/%m/%y")
     to_date = Date.strptime(params[:to_date], "%d/%m/%y")
@@ -99,8 +100,14 @@ class CpmManagementController < ApplicationController
     # load pojects options
     ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     @projects_for_selection = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| [p.name,p.id]}
+    
+    if projects.present?
+      @default_project = projects[0]
+    else
+      @default_project = nil
+    end
 
-    @capacities = user.get_range_capacities(from_date,to_date,params[:projects])
+    @capacities = user.get_range_capacities(from_date,to_date,projects)
     #user.cpm_user_capacity.where('to_date >= ?', Date.today)
 
     @cpm_user_capacity = CpmUserCapacity.new
@@ -143,7 +150,8 @@ class CpmManagementController < ApplicationController
 
   def get_groups_filter
     # load users options
-    options = Group.all.sort_by{|g| g.name}.collect{|g| "<option value='"+(g.id).to_s+"'>"+g.name+"</option>"}
+    ignored_groups = Setting.plugin_redmine_cpm['ignored_groups'] || [0]
+    options = Group.where("id NOT IN (?)", ignored_groups).sort_by{|g| g.name}.collect{|g| "<option value='"+(g.id).to_s+"'>"+g.name+"</option>"}
 
     render text: l(:"cpm.label_groups")+" <select name='groups[]' class='filter_groups' size=10 multiple>"+options.join('')+"</select>"
   end

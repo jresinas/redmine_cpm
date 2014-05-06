@@ -14,7 +14,7 @@
 			<td><%= user.login %></td>
 			<% @time_unit_num.times do |i| %>
 				<% capacity = user.get_capacity(@time_unit,i,@projects) %>
-				<td user_id="<%=user.id%>" from_date="<%=get_from_date(@time_unit,i)%>" to_date="<%=get_to_date(@time_unit,i)%>" class="edit_user_capacities" title="<%=user.get_tooltip(@time_unit,i,@projects)%>" value=<%=capacity%>>
+				<td user_id="<%=user.id%>" from_date="<%=get_from_date(@time_unit,i)%>" to_date="<%=get_to_date(@time_unit,i)%>" class="edit_user_capacities <%='alert' if capacity > 100 %>" title="<%=user.get_tooltip(@time_unit,i,@projects)%>" value=<%=capacity%>>
 					<%= capacity %>
 				</td>
 			<% end %>
