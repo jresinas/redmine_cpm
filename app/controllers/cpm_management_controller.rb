@@ -46,7 +46,7 @@ class CpmManagementController < ApplicationController
         flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
       end
     else
-  		flash[:error] = @cpm_user_capacity.get_error_message()
+  		flash[:error] = @cpm_user_capacity.get_error_message
     end
   end
 
@@ -129,7 +129,23 @@ class CpmManagementController < ApplicationController
         flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
       end
     else
-      flash[:error] = cpm.get_error_message()
+      flash[:error] = cpm.get_error_message
+    end
+
+    redirect_to action:'edit_form', 
+                user_id:cpm.user_id, 
+                from_date:params[:start_date], 
+                to_date:params[:due_date], 
+                projects:params[:projects]
+  end
+
+  def delete_capacity
+    cpm = CpmUserCapacity.find_by_id(params[:id])
+
+    if cpm.destroy
+      flash[:notice] = l(:"cpm.msg_delete_success")
+    else
+      flash[:error] = cpm.get_error_message
     end
 
     redirect_to action:'edit_form', 

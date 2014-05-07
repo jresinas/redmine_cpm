@@ -5,18 +5,7 @@ $(document).ready(function(){
 		select_value = $(this).val();
 		html = "";
 
-		$.ajax({
-			url: '/cpm_management/get_'+select_value+'_filter',
-			async: false,
-			success: function(filter){
-				html = filter;
-			}
-		});
-
-		$('#active_filters').append("<div id='"+select_value+"' class='filter'><input id='filter_"+select_value+"' class='enable_filter' type='checkbox' checked /> "+html+"</div>");
-		
-		$('option[value='+$(this).val()+']').prop('disabled',true);
-		$('#select_filter').val("default");
+		add_filter(select_value);
 	});
 
 	// Enable/Disable filters
@@ -87,7 +76,7 @@ $(document).ready(function(){
 		});
 
 		$('#dialog').html(html);
-		$('#dialog').dialog({width:870, modal:true, close: function(){ 
+		$('#dialog').dialog({width:825, modal:true, close: function(){ 
 			$('.ui-dialog').remove();
 			$('#find_capacities').submit();
 		} });
@@ -106,6 +95,21 @@ $(document).ready(function(){
 	});
 
 });
+
+function add_filter(filter_name){
+	$.ajax({
+		url: '/cpm_management/get_'+filter_name+'_filter',
+		async: false,
+		success: function(filter){
+			html = filter;
+		}
+	});
+
+	$('#active_filters').append("<div id='"+filter_name+"' class='filter'><input id='filter_"+filter_name+"' class='enable_filter' type='checkbox' checked /> "+html+"</div>");
+	
+	$('option[value='+filter_name+']').prop('disabled',true);
+	$('#select_filter').val("default");
+}
 
 // Hide all user rows with all capacities empty
 function hide_empty_results(){

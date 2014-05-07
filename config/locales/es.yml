@@ -44,6 +44,7 @@ es:
     msg_capacity_higher_than_100: "La capacidad del usuario a superado el 100%"
     msg_save_success: "Se ha guardado con exito"
     msg_edit_success: "Se ha modificado con exito"
+    msg_delete_success: "Se ha eliminado con exito"
     months:
       January: "Enero"
       February: "Febrero"

@@ -1,4 +1,4 @@
-<div id="capacity_modal_content"
+<div id="capacity_modal_content">
 	<%= render_flash_messages %>
 
 	<% @capacities.each do |c| %>
@@ -29,7 +29,7 @@
 				<%= calendar_for('cpm_user_capacity_to_date') %>
 			</span>
 				<%= f.submit l(:"cpm.button_assign") %>
-		</span>
+		</div>
 	<% end %>
 	</div>
 </div>
