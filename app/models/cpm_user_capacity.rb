@@ -2,8 +2,6 @@ class CpmUserCapacity < ActiveRecord::Base
 	belongs_to :user
   belongs_to :project
 
-#  before_save :process_dates
-
   unloadable
   validates :capacity, :presence => true, numericality: { only_integer: true }, :inclusion => (0..100).step(5)
   validates :from_date,	:presence => true, 
@@ -17,16 +15,6 @@ class CpmUserCapacity < ActiveRecord::Base
       errors.add(:to_date, :msg_to_date_after_from_date) if to_date < from_date
     end
   end
-
-  # get the beginning of day for "from_date" and the end of the day for "to_date"
-#  def process_dates
-    #zone = User.current.preference.others[:time_zone]
-#    zone = ActiveSupport::TimeZone.new("Madrid")
-    #self.from_date = (self.from_date).beginning_of_day #change({:hour=>0,:min=>0,:sec=>0})
-    #self.to_date = (self.to_date).end_of_day #change({:hour=>21,:min=>59,:sec=>59})
-#    self.from_date = (self.from_date).in_time_zone(zone).beginning_of_day+1.minute
-#    self.to_date = (self.to_date).in_time_zone(zone).end_of_day
-#  end
 
   # send a notice if user's total capacity on a day is higher than 100
   def check_capacity

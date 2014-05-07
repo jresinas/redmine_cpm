@@ -1,6 +1,6 @@
 <% @cpm = capacity %>
 <div class="assignment_form">
-	<%= form_for @cpm, remote: true, url: {controller: "cpm_management", action: "edit_capacity", id: capacity.id, start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects]} do |f| %>
+	<%= form_for @cpm, remote: true, url: {controller: "cpm_user_capacity", action: "edit", id: capacity.id, start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects]} do |f| %>
 		<span>
 			<%= f.label :project_id, l(:"cpm.label_project") %>
 			<%= f.select(:project_id, options_for_select(@projects_for_selection, @cpm.project_id), {}, {:style => "width:150px;"}) %>
@@ -20,8 +20,8 @@
 			<%= calendar_for('cpm_user_capacity_to_date_'+(capacity.id).to_s) %>
 		</span>
 		<span>
-			<%= f.submit l(:"cpm.button_assign") %>
+			<%= f.submit l(:"button_edit") %>
 		</span>
-		<%= link_to l(:"button_delete"), { controller: 'cpm_management', action: 'delete_capacity/'+@cpm.id.to_s, start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects] }, data: { confirm: l(:"text_are_you_sure"), method: :delete}, remote:true, class: "icon icon-del" %>
+		<%= link_to l(:"button_delete"), { controller: 'cpm_user_capacity', action: 'delete/'+@cpm.id.to_s, start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects] }, data: { confirm: l(:"text_are_you_sure"), method: :delete}, remote:true, class: "icon icon-del" %>
 	<% end %>
 </div>

@@ -1,4 +1,4 @@
-<%= form_for @cpm_user_capacity, url: {controller: "cpm_management", action: "add_capacity_assignment"} do |f| %>
+<%= form_for @cpm_user_capacity, url: {controller: "cpm_user_capacity", action: "new_by_assignment"} do |f| %>
 	<div class="splitcontentleft">
 		<div>
 			<%= f.label :user_id, l(:"cpm.label_user") %>

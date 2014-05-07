@@ -76,7 +76,7 @@ $(document).ready(function(){
 		});
 
 		$('#dialog').html(html);
-		$('#dialog').dialog({width:825, modal:true, close: function(){ 
+		$('#dialog').dialog({width:830, modal:true, close: function(){ 
 			$('.ui-dialog').remove();
 			$('#find_capacities').submit();
 		} });

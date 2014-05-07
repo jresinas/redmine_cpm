@@ -20,7 +20,7 @@ class CpmManagementController < ApplicationController
 
     @cpm_user_capacity = CpmUserCapacity.new
   end
-
+=begin
   def add_capacity_assignment
     add_capacity
     redirect_to action: 'assignments'
@@ -49,7 +49,7 @@ class CpmManagementController < ApplicationController
   		flash[:error] = @cpm_user_capacity.get_error_message
     end
   end
-
+=end
   # Capacity search result
   def planning
     @users = []
@@ -115,7 +115,7 @@ class CpmManagementController < ApplicationController
 
     render layout: false
   end
-
+=begin
   # Edit a capacity for an user
   def edit_capacity
     cpm = CpmUserCapacity.find_by_id(params[:id])
@@ -154,7 +154,7 @@ class CpmManagementController < ApplicationController
                 to_date:params[:due_date], 
                 projects:params[:projects]
   end
-
+=end
 # Search filters
   def get_users_filter
     # load users options
