@@ -16,6 +16,10 @@ module CPM
     end
 
     module ClassMethods
+      def get_not_ignored_projects
+        ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
+        Project.where("id NOT IN (?)", ignored_projects)
+      end
     end
 
     module InstanceMethods

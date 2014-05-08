@@ -11,7 +11,7 @@
 		<p>
 	    <label><%=l(:"cpm.label_ignored_groups")%></label>
 	    <%= select_tag 'settings[ignored_groups]',
-	        options_from_collection_for_select(Group.all.sort_by{|g| g.name}, :id, :login, (@settings['ignored_groups'] || [])),
+	        options_from_collection_for_select(Group.all.sort_by{|g| g.name}, :id, :name, (@settings['ignored_groups'] || [])),
 	        :multiple => true,
 	        :size => 10 %>
 		</p>
@@ -25,5 +25,15 @@
 	</fielset>
 </div>
 <div class="splitcontentright">
+	<fieldset>
+		<legend><%=l(:"cpm.title_search_filters")%></legend>
+		<p>
+	    <label><%=l(:"cpm.label_project_filters")%></label>
+	    <%= select_tag 'settings[project_filters]',
+	        options_from_collection_for_select(ProjectCustomField.where("field_format = 'list'").sort_by{|cf| cf.name}, :id, :name, (@settings['project_filters'] || [])),
+	        :multiple => true,
+	        :size => 10 %>
+		</p>
+	</fielset>
 </div>
 <div style="clear: both;"></div>

@@ -1,11 +1,15 @@
-class CpmManagementController < ApplicationController
+﻿class CpmManagementController < ApplicationController
   unloadable
+
+  before_filter :authorize_global
 
   helper :cpm_management
 
   # Main page for capacities search and management
   def show
-    @filters = [['','default']] + ['users','groups','projects','time_unit','time_unit_num'].collect{|f| [l(:"cpm.label_#{f}"),f]}
+    project_filters = Setting.plugin_redmine_cpm['project_filters'] || [0]
+    custom_field_filters = CustomField.where("id IN (?)",project_filters.map{|e| e.to_s}).collect{|cf| [cf.name,cf.id.to_s]}
+    @filters = [['','default']] + custom_field_filters + ['users','groups','projects','time_unit','time_unit_num'].collect{|f| [l(:"cpm.label_#{f}"),f]}
   end
 
   # Form for add capacities to users
@@ -15,44 +19,44 @@ class CpmManagementController < ApplicationController
     @users_for_selection = User.where("id NOT IN (?)", ignored_users).sort_by{|u| u.login}.collect{|u| [u.login,u.id]}
 
     # load pojects options
-    ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
-    @projects_for_selection = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| [p.name,p.id]}
+    @projects_for_selection = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| [p.name,p.id]}
 
     @cpm_user_capacity = CpmUserCapacity.new
   end
-=begin
-  def add_capacity_assignment
-    add_capacity
-    redirect_to action: 'assignments'
-  end
 
-  def add_capacity_modal
-    add_capacity
-    redirect_to action:'edit_form', 
-                    user_id:@cpm_user_capacity.user_id, 
-                    from_date:params[:start_date], 
-                    to_date:params[:due_date], 
-                    projects:params[:projects]
-  end
-
-  # Add new capacity to an user for a project
-  def add_capacity
-  	@cpm_user_capacity = CpmUserCapacity.new(params[:cpm_user_capacity])
-
-  	if @cpm_user_capacity.save
-  		flash[:notice] = l(:"cpm.msg_save_success")  
-
-      if !@cpm_user_capacity.check_capacity
-        flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
-      end
-    else
-  		flash[:error] = @cpm_user_capacity.get_error_message
-    end
-  end
-=end
   # Capacity search result
   def planning
     @users = []
+    @projects = []
+
+    # add projects specified by project filter
+    if params[:projects].present?
+      @projects = params[:projects]
+    end
+
+    # filter projects if custom field filters are specified
+    if params[:custom_field].present?
+      filtered_projects = []
+
+      # if there are no projects specified and there are field filters specified, get all not ignored projects by default
+      if !params[:projects].present?
+        @projects = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| p.id}
+      end
+      
+      @projects.each do |p|
+        filter = false
+        params[:custom_field].each do |cf,v|
+          if !filter
+            filter = CustomValue.where("customized_type = ? AND customized_id = ? AND custom_field_id = ? AND value IN (?)","Project",p,cf,v.map{|e| e.to_s}) == []
+          end
+        end
+        if !filter
+          filtered_projects << p
+        end
+      end
+
+      @projects = filtered_projects
+    end
 
     # add users specified by users filter
     if params[:users].present?
@@ -68,8 +72,8 @@ class CpmManagementController < ApplicationController
     @users = @users.uniq.sort_by{|u| u.login}
 
     # get users specified by project if there are not using filter for users or groups
-    if params[:projects].present? && !params[:users].present? && !params[:groups].present?
-      projects = Project.where("id IN ("+params[:projects].join(',')+")")
+    if !@projects.blank? && @users.blank?
+      projects = Project.where("id IN ("+@projects.join(',')+")")
 
       members = projects.collect{|p| p.members.collect{|m| m.user_id}}.flatten
       time_entries = projects.collect{|p| p.time_entries.collect{|te| te.user_id}}.flatten
@@ -77,7 +81,6 @@ class CpmManagementController < ApplicationController
       @users = User.where("id IN (?)", (members+time_entries).uniq).sort_by{|u| u.login}
     end
 
-    @projects = params[:projects]
     @time_unit = params[:time_unit] || 'week'
 
     if params[:time_unit_num].present?
@@ -98,8 +101,7 @@ class CpmManagementController < ApplicationController
     to_date = Date.strptime(params[:to_date], "%d/%m/%y")
 
     # load pojects options
-    ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
-    @projects_for_selection = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| [p.name,p.id]}
+    @projects_for_selection = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| [p.name,p.id]}
     
     if projects.present?
       @default_project = projects[0]
@@ -115,48 +117,9 @@ class CpmManagementController < ApplicationController
 
     render layout: false
   end
-=begin
-  # Edit a capacity for an user
-  def edit_capacity
-    cpm = CpmUserCapacity.find_by_id(params[:id])
-    data = params[:cpm_user_capacity]
-    data[:project_id] = data[:project_id].to_i
 
-    if cpm.update_attributes(data)
-      flash[:notice] = l(:"cpm.msg_edit_success")
-
-      if !cpm.check_capacity
-        flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
-      end
-    else
-      flash[:error] = cpm.get_error_message
-    end
-
-    redirect_to action:'edit_form', 
-                user_id:cpm.user_id, 
-                from_date:params[:start_date], 
-                to_date:params[:due_date], 
-                projects:params[:projects]
-  end
-
-  def delete_capacity
-    cpm = CpmUserCapacity.find_by_id(params[:id])
-
-    if cpm.destroy
-      flash[:notice] = l(:"cpm.msg_delete_success")
-    else
-      flash[:error] = cpm.get_error_message
-    end
-
-    redirect_to action:'edit_form', 
-                user_id:cpm.user_id, 
-                from_date:params[:start_date], 
-                to_date:params[:due_date], 
-                projects:params[:projects]
-  end
-=end
 # Search filters
-  def get_users_filter
+  def get_filter_users
     # load users options
     ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
     options = User.where("id NOT IN (?)", ignored_users).sort_by{|u| u.login}.collect{|u| "<option value='"+(u.id).to_s+"'>"+u.login+"</option>"}
@@ -164,7 +127,7 @@ class CpmManagementController < ApplicationController
     render text: l(:"cpm.label_users")+" <select name='users[]' class='filter_users' size=10 multiple>"+options.join('')+"</select>"
   end
 
-  def get_groups_filter
+  def get_filter_groups
     # load users options
     ignored_groups = Setting.plugin_redmine_cpm['ignored_groups'] || [0]
     options = Group.where("id NOT IN (?)", ignored_groups).sort_by{|g| g.name}.collect{|g| "<option value='"+(g.id).to_s+"'>"+g.name+"</option>"}
@@ -172,21 +135,30 @@ class CpmManagementController < ApplicationController
     render text: l(:"cpm.label_groups")+" <select name='groups[]' class='filter_groups' size=10 multiple>"+options.join('')+"</select>"
   end
 
-  def get_projects_filter
+  def get_filter_projects
     # load projects options
-    ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
-    options = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| "<option value='"+(p.id).to_s+"'>"+p.name+"</option>"}
+    options = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| "<option value='"+(p.id).to_s+"'>"+p.name+"</option>"}
 
     render text: l(:"cpm.label_projects")+" <select name='projects[]' class='filter_projects' size=10 multiple>"+options.join('')+"</select>"
   end
 
-  def get_time_unit_filter
+  def get_filter_custom_field
+    custom_field = CustomField.find_by_id(params[:custom_field_id])
+
+    case custom_field.field_format
+      when 'list'
+        options = custom_field.possible_values.collect{|o| "<option value='"+o.force_encoding('UTF-8')+"'>"+o.force_encoding('UTF-8')+"</option>"}
+        render text: custom_field.name+" <select name='custom_field["+params[:custom_field_id].to_s+"][]' class='filter_custom_fields' size=10 multiple>"+options.join('')+"</select>"
+    end
+  end
+
+  def get_filter_time_unit
     options = "<option value='week'>"+l(:"cpm.label_week")+"</option><option value='month'>"+l(:"cpm.label_month")+"</option>"
 
     render text: l(:"cpm.label_time_unit")+" <select name='time_unit' class='filter_time_unit'>"+options+"</select>";
   end
 
-  def get_time_unit_num_filter
+  def get_filter_time_unit_num
     render text: l(:"cpm.label_time_unit_num")+" <input name='time_unit_num' type='text' value='12' class='filter_time_unit_num' />"
   end
 end

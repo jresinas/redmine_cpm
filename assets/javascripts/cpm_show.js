@@ -97,8 +97,14 @@ $(document).ready(function(){
 });
 
 function add_filter(filter_name){
+	if ($.isNumeric(filter_name)){
+		url = "custom_field/"+filter_name;
+	} else {
+		url = filter_name
+	}
+
 	$.ajax({
-		url: '/cpm_management/get_'+filter_name+'_filter',
+		url: '/cpm_management/get_filter_'+url,
 		async: false,
 		success: function(filter){
 			html = filter;
