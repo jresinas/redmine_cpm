@@ -39,6 +39,7 @@ es:
 
     label_time_unit: "Unidad temporal"
     label_time_unit_num: "Núm. unidades temporales"
+    label_day: "Día"
     label_week: "Semana"
     label_month: "Mes"
 
