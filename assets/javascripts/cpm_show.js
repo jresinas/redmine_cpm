@@ -50,11 +50,8 @@ $(document).ready(function(){
 
 
 	// Generates and show modal window for user capacity edition
-	$(document).on('click','.edit_user_capacities',function(){
 /*
-		id = $(this)[0].id;
-		window.location.href = '/cpm_management/edit_form/'+id;
-*/
+	$(document).on('click','.edit_user_capacities',function(){
 		id = $(this).attr('user_id');
 		from_date = $(this).attr('from_date');
 		to_date = $(this).attr('to_date');
@@ -82,6 +79,7 @@ $(document).ready(function(){
 		} });
 
 	});
+*/
 
 	// Update user capacity edition
 	$(document).on('ajax:success', '.edit_cpm_user_capacity', function(data, status, xhr){
@@ -213,4 +211,24 @@ function clear_disabled_filters(){
 			$(filter).remove();
 		}
 	});
+}
+
+function edit_capacities(id,from_date,to_date,projects){
+	html = "";
+
+	$.ajax({
+		url: '/cpm_management/edit_form/'+id,
+		async: false,
+		data: {projects: projects, from_date: from_date, to_date: to_date},
+		success: function(filter){
+			html = filter;
+		}
+	});
+
+	$('#dialog').html(html);
+	$('#dialog').dialog({width:830, modal:true, close: function(){ 
+		$('.ui-dialog').remove();
+		$('#find_capacities').submit();
+	} });
+
 }
