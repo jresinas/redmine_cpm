@@ -98,8 +98,8 @@
     user = User.find_by_id(params[:user_id])
     projects = params[:projects]
     
-    from_date = Date.strptime(params[:from_date], "%d/%m/%y")
-    to_date = Date.strptime(params[:to_date], "%d/%m/%y")
+    @from_date = Date.strptime(params[:from_date], "%d/%m/%y")
+    @to_date = Date.strptime(params[:to_date], "%d/%m/%y")
 
     # load pojects options
     @projects_for_selection = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| [p.name,p.id]}
@@ -110,7 +110,7 @@
       @default_project = nil
     end
 
-    @capacities = user.get_range_capacities(from_date,to_date,projects)
+    @capacities = user.get_range_capacities(@from_date,@to_date,projects)
     #user.cpm_user_capacity.where('to_date >= ?', Date.today)
 
     @cpm_user_capacity = CpmUserCapacity.new
