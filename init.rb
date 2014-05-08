@@ -1,6 +1,7 @@
 require 'cpm/user_patch'
 require 'cpm/project_patch'
 require 'cpm/hooks'
+require 'cpm/cpm_menu_helper_patch'
 
 Redmine::Plugin.register :redmine_cpm do
   name 'Capacity Planning Manager'
@@ -17,4 +18,8 @@ Redmine::Plugin.register :redmine_cpm do
   			:caption => 'CPM',
 				:if => Proc.new { User.current.allowed_to?(:cpm_management, nil, :global => true) }
 
+  menu :cpm_menu, :show, { :controller => 'cpm_management', :action => 'show' },
+       :caption => :'cpm.label_management'
+  menu :cpm_menu, :assignments, { :controller => 'cpm_management', :action => 'assignments' },
+       :caption => :'cpm.label_assignments'
 end

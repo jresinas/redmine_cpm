@@ -2,6 +2,7 @@
   unloadable
 
   before_filter :authorize_global
+  before_filter :set_menu_item
 
   helper :cpm_management
 
@@ -160,5 +161,10 @@
 
   def get_filter_time_unit_num
     render text: l(:"cpm.label_time_unit_num")+" <input name='time_unit_num' type='text' value='12' class='filter_time_unit_num' />"
+  end
+
+  private
+  def set_menu_item
+    self.class.menu_item params['action'].to_sym
   end
 end
