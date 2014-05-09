@@ -148,9 +148,9 @@
 
     case custom_field.field_format
       when 'list'
-        options = custom_field.possible_values.collect{|o| "<option value='"+o.force_encoding('UTF-8')+"'>"+o.force_encoding('UTF-8')+"</option>"}
+        options = custom_field.possible_values.collect{|o| "<option value='"+o+"'>"+o+"</option>"}
         size = [10,options.count].min
-        render text: custom_field.name+" <select name='custom_field["+params[:custom_field_id].to_s+"][]' class='filter_custom_fields' size="+size.to_s+" multiple>"+options.join('')+"</select>"
+        render text: custom_field.name+" <select name='custom_field["+params[:custom_field_id].to_s+"][]' class='filter_"+custom_field.id.to_s+"' size="+size.to_s+" multiple>"+options.join('')+"</select>"
     end
   end
 
