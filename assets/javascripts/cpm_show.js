@@ -193,6 +193,7 @@ function edit_capacities(id,from_date,to_date,projects){
 		url: '/cpm_management/edit_form/'+id,
 		async: false,
 		data: {projects: projects, from_date: from_date, to_date: to_date},
+		type: 'POST',
 		success: function(filter){
 			html = filter;
 		}
