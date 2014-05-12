@@ -125,7 +125,7 @@
     ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
     options = User.where("id NOT IN (?)", ignored_users).sort_by{|u| u.login}.collect{|u| "<option value='"+(u.id).to_s+"'>"+u.login+"</option>"}
 
-    render text: l(:"cpm.label_users")+" <select name='users[]' class='filter_users' size=10 multiple>"+options.join('')+"</select>"
+    render text: "<span class='filter_name'>"+l(:"cpm.label_users")+"</span> <select name='users[]' class='filter_users' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_filter_groups
@@ -133,14 +133,14 @@
     ignored_groups = Setting.plugin_redmine_cpm['ignored_groups'] || [0]
     options = Group.where("id NOT IN (?)", ignored_groups).sort_by{|g| g.name}.collect{|g| "<option value='"+(g.id).to_s+"'>"+g.name+"</option>"}
 
-    render text: l(:"cpm.label_groups")+" <select name='groups[]' class='filter_groups' size=10 multiple>"+options.join('')+"</select>"
+    render text: "<span class='filter_name'>"+l(:"cpm.label_groups")+"</span> <select name='groups[]' class='filter_groups' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_filter_projects
     # load projects options
-    options = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| "<option value='"+(p.id).to_s+"'>"+p.name+"</option>"}
+    options = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| "<option value='"+(p.id).to_s+"'>"+CGI::escapeHTML(p.name)+"</option>"}
 
-    render text: l(:"cpm.label_projects")+" <select name='projects[]' class='filter_projects' size=10 multiple>"+options.join('')+"</select>"
+    render text: "<span class='filter_name'>"+l(:"cpm.label_projects")+"</span> <select name='projects[]' class='filter_projects' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_filter_custom_field
@@ -150,18 +150,18 @@
       when 'list'
         options = custom_field.possible_values.collect{|o| "<option value='"+o+"'>"+o+"</option>"}
         size = [10,options.count].min
-        render text: custom_field.name+" <select name='custom_field["+params[:custom_field_id].to_s+"][]' class='filter_"+custom_field.id.to_s+"' size="+size.to_s+" multiple>"+options.join('')+"</select>"
+        render text: "<span class='filter_name'>"+custom_field.name+"</span> <select name='custom_field["+params[:custom_field_id].to_s+"][]' class='filter_"+custom_field.id.to_s+"' size="+size.to_s+" multiple>"+options.join('')+"</select>"
     end
   end
 
   def get_filter_time_unit
     options = "<option value='day'>"+l(:"cpm.label_day")+"</option><option value='week'>"+l(:"cpm.label_week")+"</option><option value='month'>"+l(:"cpm.label_month")+"</option>"
 
-    render text: l(:"cpm.label_time_unit")+" <select name='time_unit' class='filter_time_unit'>"+options+"</select>";
+    render text: "<span class='filter_name'>"+l(:"cpm.label_time_unit")+"</span> <select name='time_unit' class='filter_time_unit'>"+options+"</select>";
   end
 
   def get_filter_time_unit_num
-    render text: l(:"cpm.label_time_unit_num")+" <input name='time_unit_num' type='text' value='12' class='filter_time_unit_num' />"
+    render text: "<span class='filter_name'>"+l(:"cpm.label_time_unit_num")+"</span> <input name='time_unit_num' type='text' value='12' class='filter_time_unit_num' />"
   end
 
   private

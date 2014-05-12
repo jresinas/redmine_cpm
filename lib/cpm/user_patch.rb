@@ -55,7 +55,7 @@ module CPM
         end_day = CpmDate.get_due_date(type,i)
 
         self.get_range_capacities(start_day,end_day,projects).collect{|e| 
-          e.project.name+": "+(e.capacity).to_s+"%. "+e.from_date.strftime('%d/%m/%y')+" - "+e.to_date.strftime('%d/%m/%y')
+          CGI::escapeHTML(e.project.name)+": "+(e.capacity).to_s+"%. "+e.from_date.strftime('%d/%m/%y')+" - "+e.to_date.strftime('%d/%m/%y')
         }.join("<br>")
       end
 
