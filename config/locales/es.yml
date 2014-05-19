@@ -37,6 +37,7 @@ es:
     label_hide_empty_users: "Ocultar usuarios vacios"
     label_bar_view: "Ver barras" 
 
+    label_project_manager: "Jefes de proyecto"
     label_time_unit: "Unidad temporal"
     label_time_unit_num: "Núm. unidades temporales"
     label_day: "Día"

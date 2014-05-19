@@ -10,7 +10,7 @@
   def show
     project_filters = Setting.plugin_redmine_cpm['project_filters'] || [0]
     custom_field_filters = CustomField.where("id IN (?)",project_filters.map{|e| e.to_s}).collect{|cf| [cf.name,cf.id.to_s]}
-    @filters = [['','default']] + custom_field_filters + ['users','groups','projects','time_unit','time_unit_num'].collect{|f| [l(:"cpm.label_#{f}"),f]}
+    @filters = [['','default']] + custom_field_filters + ['users','groups','projects','project_manager','time_unit','time_unit_num'].collect{|f| [l(:"cpm.label_#{f}"),f]}
   end
 
   # Form for add capacities to users
@@ -32,15 +32,21 @@
 
     # add projects specified by project filter
     if params[:projects].present?
-      @projects = params[:projects]
+      @projects += params[:projects]
     end
+
+    if params[:project_manager].present?
+      @projects += MemberRole.find(:all, :include => :member, :conditions => ['members.user_id IN (?) AND role_id = ?', params[:project_manager].join(','), 3]).collect{|mr| mr.member.project_id}
+    end
+
+    @projects = @projects.uniq
 
     # filter projects if custom field filters are specified
     if params[:custom_field].present?
       filtered_projects = []
 
       # if there are no projects specified and there are field filters specified, get all not ignored projects by default
-      if !params[:projects].present?
+      if @projects.empty?
         @projects = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| p.id}
       end
       
@@ -141,6 +147,26 @@
     options = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| "<option value='"+(p.id).to_s+"'>"+CGI::escapeHTML(p.name)+"</option>"}
 
     render text: "<span class='filter_name'>"+l(:"cpm.label_projects")+"</span> <select name='projects[]' class='filter_projects' size=10 multiple>"+options.join('')+"</select>"
+  end
+
+  def get_filter_project_manager
+    project_manager_role = 3;
+
+    role_pm = Role.find_by_id(project_manager_role)
+
+    users = []
+    Project.all.collect{|p|
+      project_manager = p.users_by_role[role_pm]
+      if project_manager.present?
+        project_manager.each do |pm|
+          users << pm
+        end
+      end
+    }
+
+    options = users.uniq.sort.collect{|u| "<option value='"+(u.id).to_s+"'>"+u.login+"</option>"}
+
+    render text: "<span class='filter_name'>"+l(:"cpm.label_project_manager")+"</span> <select name='project_manager[]' class='filter_projects' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_filter_custom_field
