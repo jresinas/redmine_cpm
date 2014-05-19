@@ -150,7 +150,7 @@
   end
 
   def get_filter_project_manager
-    project_manager_role = 3;
+    project_manager_role = Setting.plugin_redmine_cpm['project_manager_role'];
 
     role_pm = Role.find_by_id(project_manager_role)
 

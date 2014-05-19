@@ -15,6 +15,8 @@ es:
     label_ignored_projects: "Proyectos ignorados"
     label_ignored_groups: "Grupos ignorados"
     label_project_filters: "Filtros de proyecto"
+    title_roles: "Roles"
+    label_project_manager_role: "Jefe de proyecto"
 
     label_assignments: "Asignaciones"
     label_management: "Gestión"

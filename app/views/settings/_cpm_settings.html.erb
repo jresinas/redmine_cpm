@@ -35,5 +35,15 @@
 	        :size => 10 %>
 		</p>
 	</fielset>
+	<fieldset>
+		<legend><%=l(:"cpm.title_roles")%></legend>
+		<p>
+	    <label><%=l(:"cpm.label_project_manager_role")%></label>
+	    <%= select_tag 'settings[project_manager_role]',
+	        options_from_collection_for_select(Role.all, :id, :name, (@settings['project_manager_role'] || [])),
+	        :multiple => true,
+	        :size => 10 %>
+		</p>
+	</fielset>
 </div>
 <div style="clear: both;"></div>
