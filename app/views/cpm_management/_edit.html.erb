@@ -1,27 +1,39 @@
 <% @cpm = capacity %>
 <div class="assignment_form">
-	<%= form_for @cpm, remote: true, url: {controller: "cpm_user_capacity", action: "edit", id: capacity.id, start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects]} do |f| %>
-		<span>
-			<%= f.label :project_id, l(:"cpm.label_project") %>
-			<%= f.select(:project_id, options_for_select(@projects_for_selection, @cpm.project_id), {}, {:style => "width:150px;"}) %>
-		</span>
-		<span>
-			<%= f.label :capacity, l(:"cpm.label_capacity") %>
-			<%= f.text_field :capacity, :size => 2 %>%
-		</span>
-		<span>
-			<%= f.label :from_date, l(:"cpm.label_start_date") %>
-			<%= f.text_field :from_date, :value => @cpm.from_date.strftime('%Y-%m-%d'), :id => "cpm_user_capacity_from_date_"+(capacity.id).to_s, size: 10 %>
-			<%= calendar_for('cpm_user_capacity_from_date_'+(capacity.id).to_s) %>
-		</span>
-		<span>
-			<%= f.label :to_date, l(:"cpm.label_due_date") %>
-			<%= f.text_field :to_date, :value => @cpm.to_date.strftime('%Y-%m-%d'), :id => "cpm_user_capacity_to_date_"+(capacity.id).to_s, size: 10 %>
-			<%= calendar_for('cpm_user_capacity_to_date_'+(capacity.id).to_s) %>
-		</span>
-		<span>
-			<%= f.submit l(:"button_edit") %>
-		</span>
-		<%= link_to l(:"button_delete"), { controller: 'cpm_user_capacity', action: 'delete/'+@cpm.id.to_s, start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects] }, data: { confirm: l(:"text_are_you_sure"), method: :delete}, remote:true, class: "icon icon-del" %>
+	<%= form_for @cpm, remote: true, url: {controller: "cpm_user_capacity", action: "edit", id: capacity.id, start_date: params[:from_date], due_date: params[:to_date], projects: params[:projects]} do |f| %>
+		<div class='edit_row_content'>
+			<span>
+				<%= f.label :project_id, l(:"cpm.label_project") %>
+				<%= f.select(:project_id, options_for_select(@projects_for_selection, @cpm.project_id), {}, {:style => "width:150px;"}) %>
+			</span>
+			<span>
+				<%= f.label :capacity, l(:"cpm.label_capacity") %>
+				<%= f.text_field :capacity, :size => 2 %>%
+			</span>
+			<span>
+				<%= f.label :from_date, l(:"cpm.label_start_date") %>
+				<%= f.text_field :from_date, :value => @cpm.from_date.strftime('%Y-%m-%d'), :id => "cpm_user_capacity_from_date_"+(capacity.id).to_s, size: 10 %>
+				<%= calendar_for('cpm_user_capacity_from_date_'+(capacity.id).to_s) %>
+			</span>
+			<span>
+				<%= f.label :to_date, l(:"cpm.label_due_date") %>
+				<%= f.text_field :to_date, :value => @cpm.to_date.strftime('%Y-%m-%d'), :id => "cpm_user_capacity_to_date_"+(capacity.id).to_s, size: 10 %>
+				<%= calendar_for('cpm_user_capacity_to_date_'+(capacity.id).to_s) %>
+			</span>
+			<span>
+				<%= l(:"cpm.label_edited_by") %>
+				<% if @cpm.editor.present? %>
+					<%= @cpm.editor.login %>
+				<% else %>
+					<%= l(:"cpm.unknown") %>
+				<% end %>
+			</span>
+		</div>
+		<div class='edit_row_options'>
+			<span>
+				<%= f.submit l(:"button_edit") %>
+			</span>
+			<%= link_to l(:"button_delete"), { controller: 'cpm_user_capacity', action: 'delete/'+@cpm.id.to_s, start_date: params[:from_date], due_date: params[:to_date], projects:params[:projects] }, data: { confirm: l(:"text_are_you_sure"), method: :delete}, remote:true, class: "icon icon-del" %>
+		</div>
 	<% end %>
 </div>

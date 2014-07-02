@@ -1,6 +1,7 @@
 class CpmUserCapacity < ActiveRecord::Base
 	belongs_to :user
   belongs_to :project
+  belongs_to :editor, :class_name => "User", :foreign_key => "editor_id"
 
   unloadable
   validates :capacity, :presence => true, numericality: { only_integer: true }, :inclusion => (0..100).step(5)
@@ -9,6 +10,10 @@ class CpmUserCapacity < ActiveRecord::Base
   validates :to_date, 	:presence => true, 
   						:format => {:with => /^\d{4}-\d{2}-\d{2}/, :message => " tiene que ser una fecha válida" }
   validate :to_date_after_from_date
+
+  before_save do 
+    self.editor_id = User.current.id
+  end
 
   def to_date_after_from_date
     if from_date.present? && to_date.present?

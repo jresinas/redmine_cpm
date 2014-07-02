@@ -81,8 +81,25 @@ td div.bar_empty{
 
 div.assignment_form{
 	margin-top:8px;
+	clear:both;
 }
 
 div.assignment_form span{
 	margin-right:10px;
+}
+
+td.username_field{
+	vertical-align: middle !important;
+}
+
+
+
+div.edit_row_content{
+	display:inline;
+	float:left;
+}
+
+div.edit_row_options{
+	display:inline;
+	float:right;
 }

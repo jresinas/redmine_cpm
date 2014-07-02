@@ -11,7 +11,8 @@ module CPM
       base.class_eval do
         unloadable # Send unloadable so it will be reloaded in development
 
-        has_many :cpm_user_capacity, :dependent => :destroy
+        has_many :cpm_capacities, :class_name => 'CpmUserCapacity', :dependent => :destroy
+        has_many :cpm_editions, :class_name => 'CpmUserCapacity', :foreign_key => 'editor_id'
       end
     end
 
@@ -46,7 +47,7 @@ module CPM
           query = "from_date <= ? AND to_date >= ?"
         end
 
-        self.cpm_user_capacity.where(query, due_date+1, start_date)
+        self.cpm_capacities.where(query, due_date+1, start_date)
       end
 
       # Show tooltip message for the user row
@@ -55,7 +56,12 @@ module CPM
         end_day = CpmDate.get_due_date(type,i)
 
         self.get_range_capacities(start_day,end_day,projects).collect{|e| 
-          CGI::escapeHTML(e.project.name)+": "+(e.capacity).to_s+"%. "+e.from_date.strftime('%d/%m/%y')+" - "+e.to_date.strftime('%d/%m/%y')
+          editor = l(:"cpm.unknown")
+          if e.editor.present?
+            editor = e.editor.login
+          end
+
+          CGI::escapeHTML(e.project.name)+": <b>"+(e.capacity).to_s+"%</b>. "+e.from_date.strftime('%d/%m/%y')+" - "+e.to_date.strftime('%d/%m/%y')+". "+l(:"cpm.label_edited_by")+" "+editor
         }.join("<br>")
       end
 

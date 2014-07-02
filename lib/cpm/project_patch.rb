@@ -11,7 +11,7 @@ module CPM
       base.class_eval do
         unloadable # Send unloadable so it will be reloaded in development
 
-        has_many :cpm_user_capacity, :dependent => :destroy
+        has_many :capacities, :class_name => 'CpmUserCapacity', :dependent => :destroy
       end
     end
 

@@ -15,7 +15,7 @@
 		<% row=0 %>
 		<% @users.each do |user| %>
 			<tr class=<% if row%2==0 %> "odd" <% else %> "even" <% end %>>
-				<td><%= user.login %></td>
+				<td class="username_field"><%= user.login %></td>
 				<% @time_unit_num.times do |i| %>
 					<% capacity = user.get_capacity(@time_unit,i,@projects) %>
 					<td onclick="edit_capacities('<%=user.id%>','<%=get_from_date(@time_unit,i)%>','<%=get_to_date(@time_unit,i)%>',<%=@projects.to_json%>);" class="edit_user_capacities <%='alert' if capacity > 100 %>" title="<%=user.get_tooltip(@time_unit,i,@projects)%>" value=<%=capacity%>>

@@ -27,6 +27,7 @@ de:
     title_capacity_assignment: "Kapazitätenzuweisung"
     label_user: "Benutzer"
     label_users: "Benutzer"
+    label_edited_by: "Bearbeitet von"
     label_group: "Gruppe"
     label_groups: "Gruppen"
     label_project: "Projekt"
@@ -54,6 +55,8 @@ de:
     msg_save_success: "Fortschritt speichern"
     msg_edit_success: "Fortschritt bearbeiten"
     msg_delete_success: "Fortschritt löschen"
+
+    unknown: "Unbekannt"
     months:
       January: "Januar"
       February: "Februar"
@@ -67,7 +70,6 @@ de:
       October: "Oktober"
       November: "November"
       December: "Dezember"
-      
   activerecord:
     errors:
       messages:

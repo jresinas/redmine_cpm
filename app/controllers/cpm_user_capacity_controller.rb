@@ -17,7 +17,10 @@ class CpmUserCapacityController < ApplicationController
 
   # Add new capacity to an user for a project
   def new
-  	@cpm_user_capacity = CpmUserCapacity.new(params[:cpm_user_capacity])
+    data = params[:cpm_user_capacity]
+#    data[:editor_id] = User.current.id
+
+  	@cpm_user_capacity = CpmUserCapacity.new(data)
 
   	if @cpm_user_capacity.save
   		flash[:notice] = l(:"cpm.msg_save_success")  

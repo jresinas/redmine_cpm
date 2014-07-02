@@ -27,6 +27,7 @@ es:
     title_capacity_assignment: "Asignación de capacidades"
     label_user: "Usuario"
     label_users: "Usuarios"
+    label_edited_by: "Editado por"
     label_group: "Grupo"
     label_groups: "Grupos"
     label_project: "Proyecto"
@@ -54,6 +55,8 @@ es:
     msg_save_success: "Se ha guardado con exito"
     msg_edit_success: "Se ha modificado con exito"
     msg_delete_success: "Se ha eliminado con exito"
+
+    unknown: "Desconocido"
     months:
       January: "Enero"
       February: "Febrero"

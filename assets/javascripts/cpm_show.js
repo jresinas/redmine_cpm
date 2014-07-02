@@ -1,7 +1,11 @@
 $(document).ready(function(){
 	add_filter('users');
 
-	$(document).tooltip();
+	$(document).tooltip({
+		open: function (event, ui) {
+        	ui.tooltip.css("max-width", "100%");
+    	}
+    });
 	// Load new filter
 	$('#select_filter').change(function(){
 		select_value = $(this).val();
@@ -200,7 +204,8 @@ function edit_capacities(id,from_date,to_date,projects){
 	});
 
 	$('#dialog').html(html);
-	$('#dialog').dialog({width:830, modal:true, close: function(){ 
+	//830
+	$('#dialog').dialog({width:1070, modal:true, close: function(){ 
 		$('.ui-dialog').remove();
 		$('#find_capacities').submit();
 	} });

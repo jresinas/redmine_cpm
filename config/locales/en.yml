@@ -27,6 +27,7 @@ en:
     title_capacity_assignment: "Capacity assignment"
     label_user: "User"
     label_users: "Users"
+    label_edited_by: "Edited by"
     label_group: "Group"
     label_groups: "Groups"
     label_project: "Project"
@@ -54,6 +55,8 @@ en:
     msg_save_success: "Save success"
     msg_edit_success: "Edit success"
     msg_delete_success: "Delete success"
+
+    unknown: "Unknown"
     months:
       January: "January"
       February: "February"
@@ -67,7 +70,6 @@ en:
       October: "October"
       November: "November"
       December: "December"
-      
   activerecord:
     errors:
       messages:
