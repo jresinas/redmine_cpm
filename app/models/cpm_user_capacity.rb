@@ -4,7 +4,7 @@ class CpmUserCapacity < ActiveRecord::Base
   belongs_to :editor, :class_name => "User", :foreign_key => "editor_id"
 
   unloadable
-  validates :capacity, :presence => true, numericality: { only_integer: true }, :inclusion => (0..100).step(5)
+  validates :capacity, :presence => true, numericality: { only_integer: true }, :inclusion => {:in => (0..100).step(5), :message => " tiene que ser multiplo de 5 comprendido entre 0 y 100."}
   validates :from_date,	:presence => true, 
   						:format => {:with => /^\d{4}-\d{2}-\d{2}/, :message => " tiene que ser una fecha válida" }
   validates :to_date, 	:presence => true, 
