@@ -20,6 +20,6 @@ Redmine::Plugin.register :redmine_cpm do
 
   menu :cpm_menu, :show, { :controller => 'cpm_management', :action => 'show' },
        :caption => :'cpm.label_management'
-  menu :cpm_menu, :assignments, { :controller => 'cpm_management', :action => 'assignments' },
-       :caption => :'cpm.label_assignments'
+  #menu :cpm_menu, :assignments, { :controller => 'cpm_management', :action => 'assignments' },
+  #     :caption => :'cpm.label_assignments'
 end

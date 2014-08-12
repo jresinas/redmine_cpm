@@ -14,7 +14,7 @@
 		<tbody>
 		<% row=0 %>
 		<% @users.each do |user| %>
-			<tr class=<% if row%2==0 %> "odd" <% else %> "even" <% end %>>
+			<tr class=<% if row%2==0 %> "even" <% else %> "odd" <% end %>>
 				<td class="username_field"><%= user.login %></td>
 				<% @time_unit_num.times do |i| %>
 					<% capacity = user.get_capacity(@time_unit,i,@projects) %>

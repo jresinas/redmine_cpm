@@ -27,20 +27,30 @@
 
   # Capacity search result
   def planning
+    ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
+    ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     @users = []
     @projects = []
 
+# getting @projects array
     # add projects specified by project filter
     if params[:projects].present?
       @projects += params[:projects]
     end
 
+    # add projects specified by project manager filter
     if params[:project_manager].present?
-      @projects += MemberRole.find(:all, :include => :member, :conditions => ['members.user_id IN (?) AND role_id = ?', params[:project_manager].join(','), 3]).collect{|mr| mr.member.project_id}
+      project_manager_role = Setting.plugin_redmine_cpm['project_manager_role'];
+      if project_manager_role.present?
+        @projects += MemberRole.find(:all, :include => :member, :conditions => ['members.user_id IN (?) AND role_id = ?', params[:project_manager].join(','), project_manager_role]).collect{|mr| mr.member.project_id}
+      end
     end
 
-    @projects = @projects.uniq
+    # excluding ignored projects
+    @projects = @projects.uniq.reject{|p| ignored_projects.include?(p.to_s)}
 
+
+# filtering @projects array by custom field filters
     # filter projects if custom field filters are specified
     if params[:custom_field].present?
       filtered_projects = []
@@ -50,6 +60,7 @@
         @projects = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| p.id}
       end
       
+      # for each project available will check if match with all custom field filters activated
       @projects.each do |p|
         filter = false
         params[:custom_field].each do |cf,v|
@@ -65,6 +76,7 @@
       @projects = filtered_projects
     end
 
+# getting @users array
     # add users specified by users filter
     if params[:users].present?
       @users += User.where("id IN (?)", params[:users])
@@ -72,20 +84,23 @@
 
     # add users specified by groups filter
     if params[:groups].present?
-      @users += Group.where("id IN (?)", params[:groups]).collect{|g| g.users}.flatten
+      @users += Group.where("id IN (?)", params[:groups]).collect{|g| g.users.reject{|u| ignored_users.include?((u.id).to_s)}}.flatten
     end
 
     # join users
     @users = @users.uniq.sort_by{|u| u.login}
 
+# if @users array is empty, get it based on @projects array
     # get users specified by project if there are not using filter for users or groups
     if !@projects.blank? && @users.blank?
       projects = Project.where("id IN ("+@projects.join(',')+")")
 
+      # get users who are project members
       members = projects.collect{|p| p.members.collect{|m| m.user_id}}.flatten
+      # get users who have time entries in projects
       time_entries = projects.collect{|p| p.time_entries.collect{|te| te.user_id}}.flatten
 
-      @users = User.where("id IN (?)", (members+time_entries).uniq).sort_by{|u| u.login}
+      @users = User.where("id IN (?)", (members+time_entries).uniq).reject{|u| ignored_users.include?((u.id).to_s)}.sort_by{|u| u.login}
     end
 
     @time_unit = params[:time_unit] || 'week'
@@ -166,7 +181,7 @@
 
     options = users.uniq.sort.collect{|u| "<option value='"+(u.id).to_s+"'>"+u.login+"</option>"}
 
-    render text: "<span class='filter_name'>"+l(:"cpm.label_project_manager")+"</span> <select name='project_manager[]' class='filter_projects' size=10 multiple>"+options.join('')+"</select>"
+    render text: "<span class='filter_name'>"+l(:"cpm.label_project_manager")+"</span> <select name='project_manager[]' class='filter_project_manager' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_filter_custom_field
