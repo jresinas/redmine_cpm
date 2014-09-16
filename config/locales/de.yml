@@ -17,6 +17,8 @@ de:
     label_project_filters: "Projekt Filter"
     title_roles: "Rollen"
     label_project_manager_role: "Projekt Manager"
+    label_black_list_changes: "The following lists has been modified"
+    label_save_changes_confirm: "Are you sure you want to save changes?"
 
     label_assignments: "Zuweisung"
     label_management: "Management"
