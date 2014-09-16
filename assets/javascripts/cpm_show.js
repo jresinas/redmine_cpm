@@ -68,7 +68,7 @@ $(document).ready(function(){
 });
 
 // Show the specified filter
-function add_filter(filter_name){
+function add_filter(filter_name,show_banned,options){
 	if ($.isNumeric(filter_name)){
 		url = "custom_field/"+filter_name;
 	} else {
@@ -77,16 +77,45 @@ function add_filter(filter_name){
 
 	$.ajax({
 		url: '/cpm_management/get_filter_'+url,
+		data: {'show_banned':show_banned,'options':options},
 		async: false,
 		success: function(filter){
 			html = filter;
 		}
 	});
 
-	$('#active_filters').append("<div id='"+filter_name+"' class='filter'><input id='filter_"+filter_name+"' class='enable_filter' type='checkbox' checked /> "+html+"</div>");
+	//$('#active_filters').append("<div id='"+filter_name+"' class='filter'><input id='filter_"+filter_name+"' class='enable_filter' type='checkbox' checked /> "+html['filter']+"</div>");
+	// Show filter options
+	if ($('#active_filters #'+filter_name).length != 0){
+		$('#active_filters #'+filter_name).append(html['filter'])
+	} else {
+		$('#active_filters').append("<div id='"+filter_name+"' class='filter'>"+html['filter']+"</div>");
+	}
 	
+	// Disable filter option in 'Add filter' list
 	$('option[value='+filter_name+']').prop('disabled',true);
 	$('#select_filter').val("default");
+}
+
+function update_filter(filter_name,show_banned,options){
+	// Delete specified filter
+	$('#'+filter_name).empty();
+	// Show specified filter
+	add_filter(filter_name,show_banned,options);
+
+/*
+	if (ignore){
+		$('#'+filter_name+' input.ignore_blacklists').attr('checked',true);
+	} else {
+		$('#'+filter_name+' input.ignore_blacklists').attr('checked',false);
+	}
+
+	if (options != ""){
+		$.each(options, function(i,option){
+			$('#'+filter_name+" select.filter_"+filter_name+" option[value='"+option['value']+"']").attr('selected',true);
+		});
+	}
+*/
 }
 
 // Hide all user rows with all capacities empty
@@ -196,7 +225,7 @@ function edit_capacities(id,from_date,to_date,projects){
 	$.ajax({
 		url: '/cpm_management/edit_form/'+id,
 		async: false,
-		data: {projects: projects, from_date: from_date, to_date: to_date},
+		data: {projects: projects, from_date: from_date, to_date: to_date, ignore_blacklists: $('#ignore_blacklists').serialize()},
 		type: 'POST',
 		success: function(filter){
 			html = filter;
