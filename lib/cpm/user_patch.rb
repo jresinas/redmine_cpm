@@ -50,7 +50,7 @@ module CPM
         self.cpm_capacities.where(query, due_date+1, start_date)
       end
 
-      # Show tooltip message for the user row
+      # Show user capacity tooltip
       def get_tooltip(type,i,projects)
         start_day = CpmDate.get_start_date(type,i)
         end_day = CpmDate.get_due_date(type,i)
@@ -63,6 +63,39 @@ module CPM
 
           CGI::escapeHTML(e.project.name)+": <b>"+(e.capacity).to_s+"%</b>. "+e.from_date.strftime('%d/%m/%y')+" - "+e.to_date.strftime('%d/%m/%y')+". "+l(:"cpm.label_edited_by")+" "+editor
         }.join("<br>")
+      end
+
+      # Show user tooltip
+      def show_tooltip_info
+        profile_id = Setting.plugin_redmine_cpm['cmi_profile'] || []
+
+        info = self.name
+
+        if profile_id.present?
+          profile = self.custom_values.where("custom_field_id = ?", profile_id)
+          if profile.present?
+            info += " ("+profile[0].value+")"
+          end
+        end
+
+        projects = self.projects
+
+        if projects.present?
+          info += "<br><br><b>"+l('label_project_plural')+":</b><ul>"
+          if projects.length > 5
+            4.times do |i|
+              info += "<li>"+projects[i].name+"</li>"
+            end
+            info += "</ul>"+l('cpm.label_other_projects', :n => (projects.length-4).to_s);
+          else projects.length <= 5
+            (projects.length).times do |i|
+              info += "<li>"+projects[i].name+"</li>"
+            end
+            info += "</ul>"
+          end
+        end
+
+        info
       end
 
       # Get html capacity summary for user's welcome page

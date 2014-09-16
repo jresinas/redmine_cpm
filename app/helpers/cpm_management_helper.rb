@@ -56,4 +56,12 @@ module CpmManagementHelper
 		date = CPM::CpmDate.get_due_date(type,index)
 		date.strftime('%d/%m/%y')
 	end
+
+	def even_odd(row)
+		if row%2==0 
+			"even"
+		else
+			"odd"
+		end 
+	end
 end

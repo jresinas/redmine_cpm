@@ -44,7 +44,17 @@
 	        :multiple => true,
 	        :size => 10 %>
 		</p>
-	</fielset>
+	</fieldset>
+	<fieldset>
+		<legend><%=l(:"cpm.title_custom_fields")%></legend>
+		<p>
+	    <label><%=l(:"cpm.label_cmi_profile")%></label>
+	    <%= select_tag 'settings[cmi_profile]',
+	        options_from_collection_for_select(UserCustomField.all, :id, :name, (@settings['cmi_profile'] || [])), 
+	        :include_blank => true
+	    %>
+		</p>
+	</fieldset>
 </div>
 <div style="clear: both;"></div>
 

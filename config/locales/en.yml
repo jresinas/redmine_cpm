@@ -17,6 +17,8 @@ en:
     label_project_filters: "Project filters"
     title_roles: "Roles"
     label_project_manager_role: "Project manager"
+    title_custom_fields: "Campos personalizados"
+    label_cmi_profile: "Perfiles CMI"
     label_black_list_changes: "The following lists has been modified"
     label_save_changes_confirm: "Are you sure you want to save changes?"
 
@@ -48,6 +50,7 @@ en:
     label_day: "Day"
     label_week: "Week"
     label_month: "Month"
+    label_other_projects: "And %{n} others"
 
     button_find: "Search"
     label_week_n: "Week %{n}"
