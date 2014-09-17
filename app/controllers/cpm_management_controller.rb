@@ -198,7 +198,7 @@
   def get_filter_time_unit
     options = "<option value='day'>"+l(:"cpm.label_day")+"</option><option value='week'>"+l(:"cpm.label_week")+"</option><option value='month'>"+l(:"cpm.label_month")+"</option>"
 
-    render text: "<span class='filter_name'>"+l(:"cpm.label_time_unit")+"</span> <select name='time_unit' class='filter_time_unit chosen-select' style='width:200px;'>"+options+"</select>";
+    render text: "<span class='filter_name'>"+l(:"cpm.label_time_unit")+"</span> <select name='time_unit' class='filter_time_unit chosen-select'>"+options+"</select>";
   end
 
   def get_filter_time_unit_num
