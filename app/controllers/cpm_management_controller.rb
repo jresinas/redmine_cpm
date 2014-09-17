@@ -134,6 +134,12 @@
     @capacities = user.get_range_capacities(@from_date,@to_date,projects)
     #user.cpm_user_capacity.where('to_date >= ?', Date.today)
 
+    @capacities.each do |c|
+      if !c.check_capacity
+        flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
+      end
+    end
+
     @cpm_user_capacity = CpmUserCapacity.new
     @cpm_user_capacity.user_id = params[:user_id]
 
