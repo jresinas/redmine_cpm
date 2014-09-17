@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	add_filter('users');
+	$(".chosen-select").chosen();
 
 	$(document).tooltip({
 		open: function (event, ui) {
@@ -87,6 +88,7 @@ function add_filter(filter_name){
 	
 	$('option[value='+filter_name+']').prop('disabled',true);
 	$('#select_filter').val("default");
+	$(".chosen-select").chosen();
 }
 
 // Hide all user rows with all capacities empty

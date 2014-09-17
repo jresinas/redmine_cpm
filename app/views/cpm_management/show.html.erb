@@ -1,6 +1,8 @@
 <% content_for :header_tags do %>
   <%= javascript_include_tag "cpm_show.js", :plugin => 'redmine_cpm' %>
   <%= stylesheet_link_tag "cpm_show.css", :plugin => 'redmine_cpm' %>
+  <%= javascript_include_tag "chosen.jquery.min.js", :plugin => 'redmine_cpm' %>
+  <%= stylesheet_link_tag "chosen.min.css", :plugin => 'redmine_cpm' %>
 <% end %>
 
 <h2><%=l(:"cpm.title_capacity_managment")%></h2>
