@@ -15,7 +15,7 @@ module CpmManagementHelper
 			when 'day'
 				get_from_date(type,index)
 			when 'week'
-				get_from_date(type,index)+" - "+get_to_date(type,index)
+				(get_from_date(type,index)+"<br>"+get_to_date(type,index)).html_safe
 			when 'month'
 				date = Date.today+index.month
 				l(:"cpm.months.#{date.strftime('%B')}")+" "+date.strftime('%Y')

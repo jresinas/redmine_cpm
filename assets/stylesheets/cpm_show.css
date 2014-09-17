@@ -67,6 +67,13 @@ td div.bar_empty{
 	color:red;
 }
 
+#capacity_results td{
+	padding:2px;
+}
+
+#capacity_results th.month{
+	min-width:130px;
+}
 
 
 /* Modal */
