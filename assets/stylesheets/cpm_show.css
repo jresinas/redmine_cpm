@@ -49,6 +49,10 @@ td div.bar_empty{
 	color:red;
 }
 
+#capacity_results th.day.weekend, #capacity_results td.day.weekend{
+	border-right:3px dashed #66ff66;
+}
+
 #capacity_results td{
 	padding:2px;
 }

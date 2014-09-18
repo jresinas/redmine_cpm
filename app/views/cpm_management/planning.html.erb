@@ -7,7 +7,7 @@
 			<tr>
 				<th><%=l(:"cpm.label_user")%></th>
 				<% @time_unit_num.times do |i| %>
-					<th class="<%= @time_unit %>"><%= get_column_name(@time_unit,i) %></th>
+					<th class="<%= @time_unit %> <%= 'weekend' if is_friday(@time_unit,i) %>"><%= get_column_name(@time_unit,i) %></th>
 				<% end %>
 			</tr>
 		</thead>
@@ -20,7 +20,7 @@
 				</td>
 				<% @time_unit_num.times do |i| %>
 					<% capacity = user.get_capacity(@time_unit,i,@projects) %>
-					<td onclick="edit_capacities('<%=user.id%>','<%=get_from_date(@time_unit,i)%>','<%=get_to_date(@time_unit,i)%>',<%=@projects.to_json%>);" class="edit_user_capacities <%='alert' if capacity > 100 %> <%=@time_unit%>" title="<%=user.get_tooltip(@time_unit,i,@projects)%>" value=<%=capacity%>>
+					<td onclick="edit_capacities('<%=user.id%>','<%=get_from_date(@time_unit,i)%>','<%=get_to_date(@time_unit,i)%>',<%=@projects.to_json%>);" class="edit_user_capacities <%='alert' if capacity > 100 %> <%=@time_unit%> <%= 'weekend' if is_friday(@time_unit,i) %>" title="<%=user.get_tooltip(@time_unit,i,@projects)%>" value=<%=capacity%>>
 						<%= capacity %>
 					</td>
 				<% end %>

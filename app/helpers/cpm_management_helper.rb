@@ -56,6 +56,11 @@ module CpmManagementHelper
 		date = CPM::CpmDate.get_due_date(type,index)
 		date.strftime('%d/%m/%y')
 	end
+	
+	def is_friday(type,index)
+		date = CPM::CpmDate.get_start_date(type,index)
+		date.wday == 5
+	end
 
 	def even_odd(row)
 		if row%2==0 
