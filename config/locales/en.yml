@@ -40,11 +40,11 @@ en:
 
     label_hide_empty_users: "Hide empty users"
     label_bar_view: "Bar view"
-    label_ignore_black_lists: "Ignore Black lists"
 
     label_project_manager: "Project manager"
     label_time_unit: "Time unit"
     label_time_unit_num: "Time unit num"
+    label_ignore_black_lists: "Ignore Black lists"
     label_day: "Day"
     label_week: "Week"
     label_month: "Month"

@@ -10,7 +10,7 @@
   def show
     project_filters = Setting.plugin_redmine_cpm['project_filters'] || [0]
     custom_field_filters = CustomField.where("id IN (?)",project_filters.map{|e| e.to_s}).collect{|cf| [cf.name,cf.id.to_s]}
-    @filters = [['','default']] + custom_field_filters + ['users','groups','projects','project_manager','time_unit','time_unit_num'].collect{|f| [l(:"cpm.label_#{f}"),f]}
+    @filters = [['','default']] + custom_field_filters + ['users','groups','projects','project_manager','time_unit','time_unit_num','ignore_black_lists'].collect{|f| [l(:"cpm.label_#{f}"),f]}
   end
 
   # Form for add capacities to users
@@ -38,7 +38,7 @@
     @projects = []
 
 # getting @projects array
-    # add projects specified by project filter
+  # add projects specified by project filter
     if params[:projects].present?
       @projects += params[:projects]
     end
@@ -51,9 +51,8 @@
       end
     end
 
-    # excluding ignored projects
+    # exclude ignored projects
     @projects = @projects.uniq.reject{|p| ignored_projects.include?(p.to_s)}
-
 
 # filtering @projects array by custom field filters
     # filter projects if custom field filters are specified
@@ -167,13 +166,6 @@
     @options = User.where("id NOT IN (?)", ignored_users).sort_by{|u| u.login}.collect{|u| "<option value='"+(u.id).to_s+"' "+(actived_options.include?((u.id).to_s)? "selected" : "")+">"+u.login+"</option>"}.join('')
   
     render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/users', :layout => false, :locals => { :options => @options }) }
-=begin
-    text: "<span class='filter_name'>"+l(:"cpm.label_users")+"</span> 
-    <select name='users[]' class='filter_users' size=10 multiple>"+options.join('')+"</select>
-    <input type='checkbox' class='ignore_blacklists' name='ignore_blacklists' 
-      onclick='update_filter(\"users\",$(\"#users input.ignore_blacklists\").val(),$(\"#users select.filter_users\").serializeArray());' "
-      if params['ignore_blacklists'].present? checked end "> Deshabilitar lista de ignorados"
-=end
   end
 
   def get_filter_groups
@@ -191,8 +183,6 @@
     @options = Group.where("id NOT IN (?)", ignored_groups).sort_by{|g| g.name}.collect{|g| "<option value='"+(g.id).to_s+"' "+(actived_options.include?((g.id).to_s)? "selected" : "")+">"+g.name+"</option>"}.join('')
     
     render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/groups', :layout => false, :locals => { :options => @options }) }
-
-    #render text: "<span class='filter_name'>"+l(:"cpm.label_groups")+"</span> <select name='groups[]' class='filter_groups' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_filter_projects
@@ -210,7 +200,6 @@
     @options = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| "<option value='"+(p.id).to_s+"' "+(actived_options.include?((p.id).to_s)? "selected" : "")+">"+CGI::escapeHTML(p.name)+"</option>"}.join('')
 
     render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/projects', :layout => false, :locals => { :options => @options }) }
-    #render text: "<span class='filter_name'>"+l(:"cpm.label_projects")+"</span> <select name='projects[]' class='filter_projects' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_filter_project_manager
@@ -228,10 +217,9 @@
       end
     }
 
-    @options = users.uniq.sort.collect{|u| "<option value='"+(u.id).to_s+"' "+(actived_options.include?((u.id).to_s)? "selected" : "")+">"+u.login+"</option>"}.join('')
+    @options = users.uniq.sort.collect{|u| "<option value='"+(u.id).to_s+"' >"+u.login+"</option>"}.join('')
 
     render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/project_managers', :layout => false, :locals => { :options => @options }) }
-    #render text: "<span class='filter_name'>"+l(:"cpm.label_project_manager")+"</span> <select name='project_manager[]' class='filter_project_manager' size=10 multiple>"+options.join('')+"</select>"
   end
 
   def get_filter_custom_field
@@ -243,24 +231,20 @@
         size = ([10,@options.count].min).to_s
         @options = @options.join('')
 
-        #size = [10,options.count].min
-        #render text: "<span class='filter_name'>"+custom_field.name+"</span> <select name='custom_field["+params[:custom_field_id].to_s+"][]' class='filter_"+custom_field.id.to_s+"' size="+size.to_s+" multiple>"+options.join('')+"</select>"
         render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/custom_field_list', :layout => false, :locals => { :options => @options, :size => size, :custom_field => custom_field }) }
     end
   end
 
   def get_filter_time_unit
     render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/time_unit', :layout => false )}
-
-    #options = "<option value='day'>"+l(:"cpm.label_day")+"</option><option value='week'>"+l(:"cpm.label_week")+"</option><option value='month'>"+l(:"cpm.label_month")+"</option>"
-
-    #render text: "<span class='filter_name'>"+l(:"cpm.label_time_unit")+"</span> <select name='time_unit' class='filter_time_unit'>"+options+"</select>";
   end
 
   def get_filter_time_unit_num
     render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/time_unit_num', :layout => false )}
+  end
 
-    #render text: "<span class='filter_name'>"+l(:"cpm.label_time_unit_num")+"</span> <input name='time_unit_num' type='text' value='12' class='filter_time_unit_num' />"
+  def get_filter_ignore_black_lists
+    render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/ignore_black_lists', :layout => false )}
   end
 
   private
