@@ -38,11 +38,6 @@
     @projects = []
 
 # getting @projects array
-  # add projects specified by project filter
-    if params[:projects].present?
-      @projects += params[:projects]
-    end
-
     # add projects specified by project manager filter
     if params[:project_manager].present?
       project_manager_role = Setting.plugin_redmine_cpm['project_manager_role'];
@@ -80,6 +75,11 @@
       @projects = filtered_projects
     end
 
+    # add projects specified by project filter
+    if params[:projects].present?
+      @projects += params[:projects]
+    end
+
 # getting @users array
     # add users specified by users filter
     if params[:users].present?
@@ -108,12 +108,7 @@
     end
 
     @time_unit = params[:time_unit] || 'week'
-
-    if params[:time_unit_num].present?
-      @time_unit_num = params[:time_unit_num].to_i
-    else
-      @time_unit_num = 12
-    end
+    @time_unit_num = (params[:time_unit_num] || 12).to_i
 
     render layout: false
   end
