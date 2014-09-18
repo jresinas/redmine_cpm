@@ -39,14 +39,16 @@ es:
     label_capacity: "Capacidad"
     label_start_date: "Inicio"
     label_due_date: "Fin"
+    label_show_banned: "Muestra opciones ocultas"
     button_assign: "Asignar"
 
     label_hide_empty_users: "Ocultar usuarios vacios"
-    label_bar_view: "Ver barras" 
+    label_bar_view: "Ver barras"
 
     label_project_manager: "Jefes de proyecto"
     label_time_unit: "Unidad temporal"
     label_time_unit_num: "Núm. unidades temporales"
+    label_ignore_black_lists: "Ignorar Listas negras"
     label_day: "Día"
     label_week: "Semana"
     label_month: "Mes"
