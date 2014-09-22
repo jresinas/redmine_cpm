@@ -3,6 +3,8 @@
   <%= stylesheet_link_tag "cpm_show.css", :plugin => 'redmine_cpm' %>
 <% end %>
 
+<% include_calendar_headers_tags %>
+
 <h2><%=l(:"cpm.title_capacity_managment")%></h2>
 <%= render :partial => 'filters' %>
 
