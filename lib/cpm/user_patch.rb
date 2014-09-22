@@ -108,7 +108,7 @@ module CPM
         if capacities.any?
           summary += "<ul>"
           capacities.each do |c|
-            summary += "<li><a href='projects/"+c.project.identifier+"'>"+c.project.name+"</a> - "+(c.capacity).to_s+"%</li>"
+            summary += "<li><a href='projects/"+c.project.identifier+"'>"+CGI::escapeHTML(c.project.name)+"</a> - "+(c.capacity).to_s+"%</li>"
           end
           summary += "</ul>"
         end

@@ -54,6 +54,9 @@ en:
     label_month: "Month"
     label_other_projects: "And %{n} others"
 
+    label_no_assignments_today: "No tiene establecida ninguna dedicación para hoy."
+    label_todays_assignments: "Dedicación para hoy"
+
     button_find: "Search"
     label_week_n: "Week %{n}"
     label_month_n: "Month %{n}"

@@ -53,6 +53,9 @@ de:
     label_month: "Monat"
     label_other_projects: "And %{n} others"
 
+    label_no_assignments_today: "There are not assignments for today."
+    label_todays_assignments: "Today's assignments"
+
     button_find: "Suche"
     label_week_n: "Woche %{n}"
     label_month_n: "Monat %{n}"
