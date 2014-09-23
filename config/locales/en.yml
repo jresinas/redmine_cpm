@@ -54,6 +54,8 @@ en:
     label_month: "Month"
     label_other_projects: "And %{n} others"
 
+    label_no_assignments: "There are not assignments"
+
     button_find: "Search"
     label_week_n: "Week %{n}"
     label_month_n: "Month %{n}"
