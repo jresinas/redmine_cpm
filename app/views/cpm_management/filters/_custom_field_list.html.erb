@@ -1,3 +1,18 @@
-<input id=<%='filter_'+custom_field.id.to_s%> class='enable_filter' type='checkbox' checked /> 
-<span class='filter_name'><%=custom_field.name%></span> 
-<select name=<%="custom_field["+params[:custom_field_id].to_s+"][]"%> class=<%="filter_"+custom_field.id.to_s%> size=<%=size%> multiple><%=options.html_safe%></select>
+<% id = params[:custom_field_id] || custom_field_id 
+logger.info "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+logger.info @custom_field_name.inspect
+logger.info @custom_field_options.inspect
+logger.info @custom_field_size.inspect
+logger.info id.inspect
+logger.info @custom_field_name[id].inspect
+logger.info @custom_field_options[id].inspect
+logger.info @custom_field_size[id].inspect
+logger.info params.inspect
+
+%>
+
+<div id='projects' class='filter'>
+	<input id=<%='filter_'+id%> class='enable_filter' type='checkbox' checked /> 
+	<span class='filter_name'><%=@custom_field_name[id]%></span> 
+	<%= select_tag 'custom_field['+id+'][]', options_for_select(@custom_field_options[id], selected: @custom_field_selected[id]), class: 'filter_'+id, multiple: true, size: @custom_field_size[id] %>
+</div>

@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	add_filter('users');
+	//add_filter('users');
 
 	$(document).tooltip({
 		open: function (event, ui) {
@@ -75,9 +75,17 @@ function add_filter(filter_name,show_banned,options){
 		url = filter_name
 	}
 
+	data = {}
+	if (show_banned == true){
+		data['show_banned_'+filter_name] = show_banned;
+		data[filter_name]=options;
+	} else {
+		data[filter_name]=options;
+	}
+
 	$.ajax({
 		url: '/cpm_management/get_filter_'+url,
-		data: {'show_banned':show_banned,'options':options},
+		data: data,
 		async: false,
 		success: function(filter){
 			html = filter;
@@ -100,8 +108,13 @@ function add_filter(filter_name,show_banned,options){
 function update_filter(filter_name,show_banned,options){
 	// Delete specified filter
 	$('#'+filter_name).empty();
+
+	options_arr = [];
+	$.each(options, function(i,option){
+		options_arr.push(option['value']);
+	});
 	// Show specified filter
-	add_filter(filter_name,show_banned,options);
+	add_filter(filter_name,show_banned,options_arr);
 
 /*
 	if (ignore){

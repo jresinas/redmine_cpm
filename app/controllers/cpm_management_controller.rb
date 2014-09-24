@@ -8,9 +8,38 @@
 
   # Main page for capacities search and management
   def show
-    project_filters = Setting.plugin_redmine_cpm['project_filters'] || [0]
-    custom_field_filters = CustomField.where("id IN (?)",project_filters.map{|e| e.to_s}).collect{|cf| [cf.name,cf.id.to_s]}
-    @filters = [['','default']] + custom_field_filters + ['users','groups','projects','project_manager','time_unit','time_unit_num','ignore_black_lists'].collect{|f| [l(:"cpm.label_#{f}"),f]}
+    @filters = CpmUserCapacity.get_filter_names
+    
+    @active_filters = []
+    @active_custom_field_filters = []
+    @filters.collect{|f| f[1]}.each do |filter|
+      if params['filter_'+filter].present?
+        @active_filters << filter
+      elsif params['custom_field'].present? and params['custom_field'].include?(filter)
+        @active_custom_field_filters << filter
+      end
+    end
+
+    
+
+    
+    if @active_filters.empty? #and @active_custom_field_filters.empty?
+      @active_filters << 'users'
+    end
+
+    planning
+
+    @active_filters.each do |active_filter|
+      eval("get_filter_"+active_filter)
+    end
+
+    #if params['custom_field'].present?
+      #get_filter_custom_field
+    #end
+
+    @active_custom_field_filters.each do |active_custom_field_filter|
+      get_filter_custom_field(active_custom_field_filter)
+    end
   end
 
   # Form for add capacities to users
@@ -27,7 +56,7 @@
 
   # Capacity search result
   def planning
-    if !params['ignore_blacklists'].present?
+    if !params['filter_ignore_black_lists'].present?
       ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
       ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     else
@@ -109,13 +138,11 @@
 
     @time_unit = params[:time_unit] || 'week'
     @time_unit_num = (params[:time_unit_num] || 12).to_i
-
-    render layout: false
   end
 
   # Capacity edit form
   def edit_form
-    if !params['ignore_blacklists'].present?
+    if !params['filter_ignore_black_lists'].present?
       ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     else
       ignored_projects =[0]
@@ -155,18 +182,29 @@
   def get_filter_users
     # load users options
     ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
-    if params['show_banned'].present? and params['show_banned'] == 'true'
+    #if params['show_banned'].present? and params['show_banned'] == 'true'
+    if params['show_banned_users'].present?
       ignored_users = [0]
     end
 
+=begin
     actived_options = []
     if params['options'].present?
       actived_options = params['options'].collect{|i,o| o['value']}
     end
 
     @options = User.where("id NOT IN (?)", ignored_users).sort_by{|u| u.login}.collect{|u| "<option value='"+(u.id).to_s+"' "+(actived_options.include?((u.id).to_s)? "selected" : "")+">"+u.login+"</option>"}.join('')
-  
-    render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/users', :layout => false, :locals => { :options => @options }) }
+=end
+    @users_selected = []
+    if params['users'].present?
+      @users_selected = params['users']
+    end
+
+    @users_options = User.where("id NOT IN(?)", ignored_users).sort_by{|u| u.login}.collect{|u| [u.login, (u.id).to_s]}
+
+    if request.xhr?
+      render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/users', :layout => false, :locals => { :options => @users_options }) }
+    end
   end
 
   def get_filter_groups
@@ -176,14 +214,16 @@
       ignored_groups = [0]
     end
 
-    actived_options = []
-    if params['options'].present?
-      actived_options = params['options'].collect{|i,o| o['value']}
+    @groups_selected = []
+    if params['groups'].present?
+      @groups_selected = params['groups']
     end
 
-    @options = Group.where("id NOT IN (?)", ignored_groups).sort_by{|g| g.name}.collect{|g| "<option value='"+(g.id).to_s+"' "+(actived_options.include?((g.id).to_s)? "selected" : "")+">"+g.name+"</option>"}.join('')
+    @groups_options = Group.where("id NOT IN (?)", ignored_groups).sort_by{|g| g.name}.collect{|g| [g.name, (g.id).to_s]}
     
-    render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/groups', :layout => false, :locals => { :options => @options }) }
+    if request.xhr?
+      render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/groups', :layout => false, :locals => { :options => @groups_options }) }
+    end
   end
 
   def get_filter_projects
@@ -193,14 +233,16 @@
       ignored_projects = [0]
     end
 
-    actived_options = []
-    if params['options'].present?
-      actived_options = params['options'].collect{|i,o| o['value']}
+    @projects_selected = []
+    if params['projects'].present?
+      @projects_selected = params['projects']
     end
 
-    @options = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| "<option value='"+(p.id).to_s+"' "+(actived_options.include?((p.id).to_s)? "selected" : "")+">"+CGI::escapeHTML(p.name)+"</option>"}.join('')
+    @projects_options = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| [CGI::escapeHTML(p.name), (p.id).to_s]}
 
-    render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/projects', :layout => false, :locals => { :options => @options }) }
+    if request.xhr?
+      render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/projects', :layout => false, :locals => { :options => @projects_options }) }
+    end
   end
 
   def get_filter_project_manager
@@ -218,34 +260,62 @@
       end
     }
 
-    @options = users.uniq.sort.collect{|u| "<option value='"+(u.id).to_s+"' >"+u.login+"</option>"}.join('')
+    @project_manager_selected = []
+    if params['project_manager'].present?
+      @project_manager_selected = params['project_manager']
+    end
 
-    render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/project_managers', :layout => false, :locals => { :options => @options }) }
-  end
+    @project_manager_options = users.uniq.sort.collect{|u| [u.login, (u.id).to_s]}
 
-  def get_filter_custom_field
-    custom_field = CustomField.find_by_id(params[:custom_field_id])
-
-    case custom_field.field_format
-      when 'list'
-        @options = custom_field.possible_values.collect{|o| "<option value='"+o+"'>"+o+"</option>"}
-        size = ([10,@options.count].min).to_s
-        @options = @options.join('')
-
-        render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/custom_field_list', :layout => false, :locals => { :options => @options, :size => size, :custom_field => custom_field }) }
+    if request.xhr?
+      render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/project_manager', :layout => false, :locals => { :options => @project_manager_options }) }
     end
   end
 
+  def get_filter_custom_field(custom_field_id=nil)
+    custom_field = CustomField.find_by_id(params[:custom_field_id] || custom_field_id)
+
+    @custom_field_options ||= {}
+    @custom_field_size ||= {}
+    @custom_field_name ||= {}
+    @custom_field_selected ||= {}
+    case custom_field.field_format
+      when 'list'
+        @custom_field_name[custom_field.id.to_s] = custom_field.name
+        @custom_field_options[custom_field.id.to_s] = custom_field.possible_values.collect{|o| [o, o]}
+        @custom_field_size[custom_field.id.to_s] = ([10,@custom_field_options[custom_field.id.to_s].count].min).to_s
+
+        if params['custom_field'].present?
+          @custom_field_selected[custom_field.id.to_s] = params['custom_field'][custom_field.id.to_s] || []
+        end
+
+        if request.xhr?
+          render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/custom_field_list', :layout => false, :locals => { :id => custom_field.id }) }
+        end
+    end
+
+  end
+
   def get_filter_time_unit
-    render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/time_unit', :layout => false )}
+    @time_unit_options = ['day','week','month'].collect{|tu| [l(:"cpm.label_#{tu}"), tu]}
+    @time_unit_selected = params['time_unit'] || 'week'
+
+    if request.xhr?
+      render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/time_unit', :layout => false )}
+    end
   end
 
   def get_filter_time_unit_num
-    render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/time_unit_num', :layout => false )}
+    @value = params['time_unit_num'] || '12';
+    if request.xhr?
+      render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/time_unit_num', :layout => false )}
+    end
   end
 
   def get_filter_ignore_black_lists
-    render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/ignore_black_lists', :layout => false )}
+    if request.xhr?
+      render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/ignore_black_lists', :layout => false )}
+    end
   end
 
   private
