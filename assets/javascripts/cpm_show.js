@@ -249,7 +249,20 @@ function edit_capacities(id,from_date,to_date,projects){
 	//830
 	$('#dialog').dialog({width:1070, modal:true, close: function(){ 
 		$('.ui-dialog').remove();
+		enable_remote_submit('find_capacities', '/cpm_management/planning');
 		$('#find_capacities').submit();
+		disable_remote_submit('find_capacities', '/cpm_management/show');
 	} });
 
+}
+
+function enable_remote_submit(form_id, action){
+	$('#'+form_id).attr('data-remote','true');
+	$('#'+form_id).attr('action',action);
+}
+
+function disable_remote_submit(form_id, action){
+	$('#'+form_id).attr('action',action);
+	$('#'+form_id).removeAttr('data-remote');
+	$('#'+form_id).removeData("remote");
 }

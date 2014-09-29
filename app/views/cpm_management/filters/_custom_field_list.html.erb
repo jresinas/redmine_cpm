@@ -1,15 +1,4 @@
-<% id = params[:custom_field_id] || custom_field_id 
-logger.info "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-logger.info @custom_field_name.inspect
-logger.info @custom_field_options.inspect
-logger.info @custom_field_size.inspect
-logger.info id.inspect
-logger.info @custom_field_name[id].inspect
-logger.info @custom_field_options[id].inspect
-logger.info @custom_field_size[id].inspect
-logger.info params.inspect
-
-%>
+<% id = params[:custom_field_id] || custom_field_id %>
 
 <div id='projects' class='filter'>
 	<input id=<%='filter_'+id%> class='enable_filter' type='checkbox' checked /> 

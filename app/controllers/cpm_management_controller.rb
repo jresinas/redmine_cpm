@@ -8,38 +8,36 @@
 
   # Main page for capacities search and management
   def show
+    # get all filter names
     @filters = CpmUserCapacity.get_filter_names
     
+    # get all filters activated by params
     @active_filters = []
     @active_custom_field_filters = []
     @filters.collect{|f| f[1]}.each do |filter|
-      if params['filter_'+filter].present?
+      if params[filter].present?
         @active_filters << filter
       elsif params['custom_field'].present? and params['custom_field'].include?(filter)
         @active_custom_field_filters << filter
       end
     end
 
-    
-
-    
-    if @active_filters.empty? #and @active_custom_field_filters.empty?
+    # if there are no active filters, show users filter
+    if @active_filters.empty? and @active_custom_field_filters.empty?
       @active_filters << 'users'
     end
 
-    planning
-
+    # for each activated filter, load it
     @active_filters.each do |active_filter|
       eval("get_filter_"+active_filter)
     end
 
-    #if params['custom_field'].present?
-      #get_filter_custom_field
-    #end
-
     @active_custom_field_filters.each do |active_custom_field_filter|
       get_filter_custom_field(active_custom_field_filter)
     end
+
+    # process planning table
+    planning
   end
 
   # Form for add capacities to users
@@ -56,6 +54,7 @@
 
   # Capacity search result
   def planning
+    # set black list arrays to empty if 'ignore_black_lists' filter is activated
     if !params['filter_ignore_black_lists'].present?
       ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
       ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
@@ -63,10 +62,12 @@
       ignored_users = [0]
       ignored_projects =[0]
     end
+
+    # users and projects to show in planning table
     @users = []
     @projects = []
 
-# getting @projects array
+    # getting @projects array
     # add projects specified by project manager filter
     if params[:project_manager].present?
       project_manager_role = Setting.plugin_redmine_cpm['project_manager_role'];
@@ -78,7 +79,6 @@
     # exclude ignored projects
     @projects = @projects.uniq.reject{|p| ignored_projects.include?(p.to_s)}
 
-# filtering @projects array by custom field filters
     # filter projects if custom field filters are specified
     if params[:custom_field].present?
       filtered_projects = []
@@ -93,7 +93,7 @@
         filter = false
         params[:custom_field].each do |cf,v|
           if !filter
-            filter = CustomValue.where("customized_type = ? AND customized_id = ? AND custom_field_id = ? AND value IN (?)","Project",p,cf,v.map{|e| e.to_s}) == []
+            filter = CustomValue.where("customized_type = ? AND customized_id = ? AND custom_field_id = ? AND value IN (?)","Project",p,cf,v.map{|e| e}) == []
           end
         end
         if !filter
@@ -109,7 +109,7 @@
       @projects += params[:projects]
     end
 
-# getting @users array
+    # getting @users array
     # add users specified by users filter
     if params[:users].present?
       @users += User.where("id IN (?)", params[:users])
@@ -120,11 +120,10 @@
       @users += Group.where("id IN (?)", params[:groups]).collect{|g| g.users.reject{|u| ignored_users.include?((u.id).to_s)}}.flatten
     end
 
-    # join users
+    # reorder and unify users
     @users = @users.uniq.sort_by{|u| u.login}
 
-# if @users array is empty, get it based on @projects array
-    # get users specified by project if there are not using filter for users or groups
+    # if there are no users selected, get them based on projects selected
     if !@projects.blank? && @users.blank?
       projects = Project.where("id IN ("+@projects.join(',')+")")
 
@@ -136,12 +135,18 @@
       @users = User.where("id IN (?)", (members+time_entries).uniq).reject{|u| ignored_users.include?((u.id).to_s)}.sort_by{|u| u.login}
     end
 
+    # set time_unit and time_unit_num default values
     @time_unit = params[:time_unit] || 'week'
     @time_unit_num = (params[:time_unit_num] || 12).to_i
+
+    if request.xhr?
+      render "cpm_management/_planning" ,layout: false
+    end
   end
 
   # Capacity edit form
   def edit_form
+    # set projects black list array to empty if 'ignore_black_lists' filter is activated
     if !params['filter_ignore_black_lists'].present?
       ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     else
@@ -180,21 +185,12 @@
 
 # Search filters
   def get_filter_users
-    # load users options
     ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
-    #if params['show_banned'].present? and params['show_banned'] == 'true'
+
     if params['show_banned_users'].present?
       ignored_users = [0]
     end
 
-=begin
-    actived_options = []
-    if params['options'].present?
-      actived_options = params['options'].collect{|i,o| o['value']}
-    end
-
-    @options = User.where("id NOT IN (?)", ignored_users).sort_by{|u| u.login}.collect{|u| "<option value='"+(u.id).to_s+"' "+(actived_options.include?((u.id).to_s)? "selected" : "")+">"+u.login+"</option>"}.join('')
-=end
     @users_selected = []
     if params['users'].present?
       @users_selected = params['users']
@@ -210,7 +206,7 @@
   def get_filter_groups
     # load groups options
     ignored_groups = Setting.plugin_redmine_cpm['ignored_groups'] || [0]
-    if params['show_banned'].present? and params['show_banned'] == 'true'
+    if params['show_banned_groups'].present?
       ignored_groups = [0]
     end
 
@@ -229,7 +225,7 @@
   def get_filter_projects
     # load projects options
     ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
-    if params['show_banned'].present? and params['show_banned'] == 'true'
+    if params['show_banned_projects'].present?
       ignored_projects = [0]
     end
 
