@@ -58,6 +58,8 @@ es:
     label_todays_assignments: "Dedicación para hoy"
     label_no_assignments: "No se han establecido asignaciones"
 
+    label_allocation: "Dedicación"
+
     button_find: "Buscar"
     label_week_n: "Semana %{n}"
     label_month_n: "Mes %{n}"

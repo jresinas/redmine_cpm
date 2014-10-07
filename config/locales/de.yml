@@ -55,7 +55,9 @@ de:
 
     label_no_assignments_today: "There are not assignments for today."
     label_todays_assignments: "Today's assignments"
-    label_no_assignments: "There are not assignments"
+    label_no_assignments: "There are no assignments"
+
+    label_allocation: "Allocation"
 
     button_find: "Suche"
     label_week_n: "Woche %{n}"

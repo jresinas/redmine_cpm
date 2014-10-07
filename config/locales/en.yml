@@ -56,7 +56,9 @@ en:
 
     label_no_assignments_today: "No tiene establecida ninguna dedicación para hoy."
     label_todays_assignments: "Dedicación para hoy"
-    label_no_assignments: "There are not assignments"
+    label_no_assignments: "There are no assignments"
+
+    label_allocation: "Allocation"
 
     button_find: "Search"
     label_week_n: "Week %{n}"
