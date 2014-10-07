@@ -1,7 +1,6 @@
 <h3><%=l(:"cpm.title_search_filters")%></h3>
-
-<%= form_tag({:action => 'show'}, {id: "find_capacities", method: 'GET'}) do %>
-	<div class="splitcontentleft">
+<div class="splitcontentleft">
+	<%= form_tag({:action => 'show'}, {id: "find_capacities", method: 'GET'}) do %>
 		<div id="active_filters">
 			<% @active_filters.each do |active_filter| %>
 				<%= render :partial => 'cpm_management/filters/'+active_filter %>
@@ -10,15 +9,15 @@
 				<%= render :partial => 'cpm_management/filters/custom_field_list', :locals => {:custom_field_id => active_custom_field_filter} %>
 			<% end %>
 		</div>
-		<div>
+		<div id='submit_filters'>
 			<%= submit_tag l(:"cpm.button_find") %>
 		</div>
-	</div>
-	<div class="splitcontentright">
-		<%=l(:"label_filter_add") %>
-		<%= select_tag(:select_filter, options_for_select(@filters, disabled: @active_filters+@active_custom_field_filters)) %>
-	</div>
+	<% end %>
+</div>
+<div class="splitcontentright">
+	<%=l(:"label_filter_add") %>
+	<%= select_tag(:select_filter, options_for_select(@filters, disabled: @active_filters+@active_custom_field_filters)) %>
+</div>
 <div style="clear: both;"></div>
 <input id="hide_empty_users" type="checkbox" /><%=l(:"cpm.label_hide_empty_users") %>
 <input id="bar_view" type="checkbox" /><%=l(:"cpm.label_bar_view") %>
-<% end %>

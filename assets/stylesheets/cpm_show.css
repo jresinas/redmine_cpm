@@ -8,6 +8,18 @@
 	max-width:220px;
 }
 
+.filter_options{
+	display:inline-table;
+}
+
+.filter{
+	margin-bottom:15px;
+}
+
+#submit_filters{
+	margin-bottom:15px;
+}
+
 
 /* Table */
 div#content_capacity_results{
