@@ -63,6 +63,7 @@ de:
     label_week_n: "Woche %{n}"
     label_month_n: "Monat %{n}"
 
+    msg_projects_not_found: "Could not found any project. Results will be shown for all projects."
     msg_capacity_higher_than_100: "Die Kapazität des Benutzers beträgt mehr als 100%"
     msg_save_success: "Fortschritt speichern"
     msg_edit_success: "Fortschritt bearbeiten"

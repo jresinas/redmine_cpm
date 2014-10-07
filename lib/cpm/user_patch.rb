@@ -44,7 +44,8 @@ module CPM
         if projects_id.present?
           query = "from_date <= ? AND to_date >= ? AND project_id IN ("+projects_id.join(',')+")"
         else
-          query = "from_date <= ? AND to_date >= ?"
+          ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
+          query = "from_date <= ? AND to_date >= ? AND project_id NOT IN ("+ignored_projects.join(',')+")"
         end
 
         self.cpm_capacities.where(query, due_date+1, start_date)

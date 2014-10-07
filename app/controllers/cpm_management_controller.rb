@@ -97,6 +97,12 @@
       @projects += params[:projects]
     end
 
+    # if there are no projects specified and there are field filters specified, get all not ignored projects by default
+    if @projects.empty?
+      flash.now[:warning] = l(:'cpm.msg_projects_not_found')
+      @projects = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| p.id}
+    end
+
     # getting @users array
     # add users specified by users filter
     if params[:users].present?
