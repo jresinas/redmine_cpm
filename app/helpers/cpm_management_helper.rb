@@ -23,36 +23,11 @@ module CpmManagementHelper
 	end
 
 	def get_from_date(type,index)
-=begin
-		case type
-			when 'day'
-				date = CpmDate.get_start_date(type,index) #Date.today + index.day
-				date.strftime('%d/%m/%y')
-			when 'week'
-				date = #(Date.today.+index.week).beginning_of_week
-				date.strftime('%d/%m/%y')
-			when 'month'
-				date = Date.today+index.month
-				(date.beginning_of_month).strftime('%d/%m/%y')
-		end
-=end
 		date = CPM::CpmDate.get_start_date(type,index)
 		date.strftime('%d/%m/%y')
 	end
 
 	def get_to_date(type,index)
-=begin
-		case type
-			when 'day'
-				get_from_date(type,index)
-			when 'week'
-				date = Date.today.+index.week
-				(date.end_of_week - 2.day).strftime('%d/%m/%y')
-			when 'month'
-				date = Date.today+index.month
-				(date.end_of_month).strftime('%d/%m/%y')
-		end
-=end
 		date = CPM::CpmDate.get_due_date(type,index)
 		date.strftime('%d/%m/%y')
 	end

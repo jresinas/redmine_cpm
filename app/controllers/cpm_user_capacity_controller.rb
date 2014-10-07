@@ -18,7 +18,6 @@ class CpmUserCapacityController < ApplicationController
   # Add new capacity to an user for a project
   def new
     data = params[:cpm_user_capacity]
-#    data[:editor_id] = User.current.id
 
   	@cpm_user_capacity = CpmUserCapacity.new(data)
 

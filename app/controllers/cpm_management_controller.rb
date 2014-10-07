@@ -40,18 +40,6 @@
     planning
   end
 
-  # Form for add capacities to users
-  def assignments
-    # load users options
-    ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
-    @users_for_selection = User.where("id NOT IN (?)", ignored_users).sort_by{|u| u.login}.collect{|u| [u.login,u.id]}
-
-    # load pojects options
-    @projects_for_selection = Project.get_not_ignored_projects.sort_by{|p| p.name}.collect{|p| [p.name,p.id]}
-
-    @cpm_user_capacity = CpmUserCapacity.new
-  end
-
   # Capacity search result
   def planning
     # set black list arrays to empty if 'ignore_black_lists' filter is activated
@@ -169,7 +157,6 @@
     end
 
     @capacities = user.get_range_capacities(@from_date,@to_date,projects)
-    #user.cpm_user_capacity.where('to_date >= ?', Date.today)
 
     @capacities.each do |c|
       if !c.check_capacity
@@ -204,7 +191,6 @@
   end
 
   def get_filter_groups
-    # load groups options
     ignored_groups = Setting.plugin_redmine_cpm['ignored_groups'] || [0]
     if params['show_banned_groups'].present?
       ignored_groups = [0]
@@ -223,7 +209,6 @@
   end
 
   def get_filter_projects
-    # load projects options
     ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     if params['show_banned_projects'].present?
       ignored_projects = [0]

@@ -56,8 +56,6 @@ $(document).ready(function(){
 
 	// Update user capacity edition
 	$(document).on('ajax:success', '.edit_cpm_user_capacity', function(data, status, xhr){
-//		msg = status.getResponseHeader('X-Message');
-//		msg = "mensaje";
 		$('#dialog').html(status);
 	});
 
@@ -92,7 +90,6 @@ function add_filter(filter_name,show_banned,options){
 		}
 	});
 
-	//$('#active_filters').append("<div id='"+filter_name+"' class='filter'><input id='filter_"+filter_name+"' class='enable_filter' type='checkbox' checked /> "+html['filter']+"</div>");
 	// Show filter options
 	if ($('#active_filters #'+filter_name).length != 0){
 		$('#active_filters #'+filter_name).append(html['filter'])
@@ -115,20 +112,6 @@ function update_filter(filter_name,show_banned,options){
 	});
 	// Show specified filter
 	add_filter(filter_name,show_banned,options_arr);
-
-/*
-	if (ignore){
-		$('#'+filter_name+' input.ignore_blacklists').attr('checked',true);
-	} else {
-		$('#'+filter_name+' input.ignore_blacklists').attr('checked',false);
-	}
-
-	if (options != ""){
-		$.each(options, function(i,option){
-			$('#'+filter_name+" select.filter_"+filter_name+" option[value='"+option['value']+"']").attr('selected',true);
-		});
-	}
-*/
 }
 
 // Hide all user rows with all capacities empty

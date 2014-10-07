@@ -21,16 +21,7 @@ module CPM
     module InstanceMethods
       def settings_with_cpm
         settings_without_cpm
-        logger.info "@@@@@@@@@@@@@@@@@@@@@@@@@"
-        logger.info @member
-        logger.info "@@@@@@@@@@@@@@@@@@@@@@@@@"
         @capacities = []
-=begin
-        @member.each do |member|
-         member[:capacities] = member.user.cpm_capacities.where('project_id = ?, from_date >= ?', @project, DateTime.now-100.day)
-        end
-=end
-        #@capacities = member.user.cpm_capacities.where('project_id = ?, from_date >= ?', @project, DateTime.now-100.day)
       end
     end
   end
