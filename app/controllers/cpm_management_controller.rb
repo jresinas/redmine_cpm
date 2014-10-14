@@ -37,13 +37,15 @@
     end
 
     # process planning table
-    planning
+    if params[:commit].present?
+      planning
+    end
   end
 
   # Capacity search result
   def planning
     # set black list arrays to empty if 'ignore_black_lists' filter is activated
-    if !params['filter_ignore_black_lists'].present?
+    if !params['ignore_black_lists'].present?
       ignored_users = Setting.plugin_redmine_cpm['ignored_users'] || [0]
       ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     else
@@ -97,9 +99,9 @@
       @projects += params[:projects]
     end
 
-    # if there are no projects specified and there are field filters specified, get all not ignored projects by default
+    # if @projects are empty, get all not ignored projects by default
     if @projects.empty?
-      flash.now[:warning] = l(:'cpm.msg_projects_not_found')
+      #flash.now[:warning] = l(:'cpm.msg_projects_not_found')
       @projects = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| p.id}
     end
 
@@ -118,7 +120,7 @@
     @users = @users.uniq.sort_by{|u| u.login}
 
     # if there are no users selected, get them based on projects selected
-    if !@projects.blank? && @users.blank?
+    if !@projects.blank? and @users.blank?
       projects = Project.where("id IN ("+@projects.join(',')+")")
 
       # get users who are project members
@@ -141,7 +143,7 @@
   # Capacity edit form
   def edit_form
     # set projects black list array to empty if 'ignore_black_lists' filter is activated
-    if !params['filter_ignore_black_lists'].present?
+    if !params['ignore_black_lists'].present?
       ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     else
       ignored_projects =[0]
@@ -165,7 +167,7 @@
     @capacities = user.get_range_capacities(@from_date,@to_date,projects)
 
     @capacities.each do |c|
-      if !c.check_capacity
+      if !c.check_capacity(ignored_projects)
         flash[:warning] = l(:"cpm.msg_capacity_higher_than_100")
       end
     end
