@@ -66,4 +66,53 @@ class CpmUserCapacity < ActiveRecord::Base
     [['','default']] + custom_field_filters + ['users','groups','projects','project_manager','time_unit','time_unit_num','ignore_black_lists'].collect{|f| [l(:"cpm.label_#{f}"),f]}
   end
 
+=begin
+  def descompose(time_unit, time_unit_num)
+    result = []
+    time_unit_num.times do |i|
+      start_day = CPM::CpmDate.get_start_date(time_unit,i)
+      end_day = CPM::CpmDate.get_due_date(time_unit,i)
+      
+
+      if self.to_date >= start_day and self.from_date <= end_day
+        fd = [Date.parse(self.from_date.to_s),start_day].max
+        td = [Date.parse(self.to_date.to_s),end_day].min
+
+        result[i] = (self.capacity*(td - fd).to_f)/(end_day - start_day).to_f
+      else
+        result[i] = 0
+      end 
+    end
+
+    result
+  end
+=end
+  def get_relative(start_day, end_day)
+    result = 0
+
+    if self.to_date >= start_day and self.from_date <= end_day
+      fd = [Date.parse(self.from_date.to_s),start_day].max
+      td = [Date.parse(self.to_date.to_s),end_day].min
+
+      result = (self.capacity*(td - fd).to_f)/(end_day - start_day).to_f
+    end
+
+    result
+  end
+
+  # Show user capacity tooltip
+  def get_tooltip(start_day, end_day)
+    result = ""
+
+    if self.to_date >= start_day and self.from_date <= end_day      
+      editor = l(:"cpm.unknown")
+      if self.editor.present?
+        editor = self.editor.login
+      end
+
+      result = CGI::escapeHTML(self.project.name)+": <b>"+(self.capacity).to_s+"%</b>. "+self.from_date.strftime('%d/%m/%y')+" - "+self.to_date.strftime('%d/%m/%y')+". "+l(:"cpm.label_edited_by")+" "+editor+"<br>"
+    end
+
+    result
+  end
 end
