@@ -94,7 +94,11 @@ class CpmUserCapacity < ActiveRecord::Base
       fd = [Date.parse(self.from_date.to_s),start_day].max
       td = [Date.parse(self.to_date.to_s),end_day].min
 
-      result = (self.capacity*(td - fd).to_f)/(end_day - start_day).to_f
+      if start_day != end_day
+        result = (self.capacity*(td - fd + 1).to_f)/(end_day - start_day + 1).to_f
+      else
+        result = self.capacity.to_f
+      end
     end
 
     result
