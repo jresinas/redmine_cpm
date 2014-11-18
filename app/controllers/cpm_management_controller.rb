@@ -97,13 +97,14 @@
     # add projects specified by project filter
     if params[:projects].present?
       @projects += params[:projects]
+      @projects.uniq
     end
 
     # if @projects are empty, get all not ignored projects by default
-    if @projects.empty?
+    #if @projects.empty?
       #flash.now[:warning] = l(:'cpm.msg_projects_not_found')
-      @projects = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| p.id}
-    end
+      #@projects = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| p.id}
+    #end
 
     # getting @users array
     # add users specified by users filter
@@ -129,6 +130,11 @@
       time_entries = projects.collect{|p| p.time_entries.collect{|te| te.user_id}}.flatten
 
       @users = User.where("id IN (?)", (members+time_entries).uniq).reject{|u| ignored_users.include?((u.id).to_s)}.sort_by{|u| u.login}
+    # if there are no projects selected, get them based on users selected
+    elsif @projects.blank? and !@users.blank?
+      members = Project.joins(:memberships).where("members.user_id IN (?)",@users)
+      time_entries = Project.joins(:time_entries).where("time_entries.user_id IN (?)",@users)
+      @projects = Project.where("id IN (?)", (members+time_entries).uniq).reject{|p| ignored_projects.include?((p.id).to_s)}.sort_by{|p| p.name}.collect{|p| p.id}
     end
 
     # set time_unit and time_unit_num default values
