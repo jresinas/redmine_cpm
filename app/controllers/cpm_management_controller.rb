@@ -141,29 +141,6 @@
     @time_unit = params[:time_unit] || 'week'
     @time_unit_num = (params[:time_unit_num] || 12).to_i
 
-########
-=begin
-    @capacities = {}
-    @users.each do |user|
-      @capacities[user.id] = @time_unit_num.times.collect{|i| 0}
-      capacities = CpmUserCapacity.where('user_id = ? AND project_id IN(?)',user.id, @projects)
-
-      capacities.each do |capacity|
-        array_aux = []
-        array_aux = capacity.descompose(@time_unit, @time_unit_num)
-
-        if @capacities[user.id].blank?
-          @capacities[user.id] = array_aux
-        else
-          i = 0
-          @capacities[user.id].each do |c|
-            @capacities[user.id][i] = c + array_aux[i]
-            i += 1
-          end
-        end
-      end
-    end
-=end
     @capacities = {}
     @users.each do |user|
       @capacities[user.id] = @time_unit_num.times.collect{|i| {'value' => 0.0, 'tooltip' => ""}}
@@ -178,7 +155,7 @@
         end
       end
     end
-########
+    
     if request.xhr?
       render "cpm_management/_planning" ,layout: false
     end
