@@ -279,12 +279,13 @@
   end
 
   def get_filter_project_manager
+    ignored_projects = Setting.plugin_redmine_cpm['ignored_projects'] || [0]
     project_manager_role = Setting.plugin_redmine_cpm['project_manager_role'];
 
     role_pm = Role.find_by_id(project_manager_role)
 
     users = []
-    Project.all.collect{|p|
+    Project.where("id NOT IN (?)", ignored_projects).collect{|p|
       project_manager = p.users_by_role[role_pm]
       if project_manager.present?
         project_manager.each do |pm|
