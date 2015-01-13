@@ -55,6 +55,17 @@
 	    %>
 		</p>
 	</fieldset>
+	<fieldset>
+		<legend><%= check_box_tag 'settings[google_calendar]', true, @settings['google_calendar'].present? %>Conexión con Google Calendar</legend>
+		<p>
+			<label>client_id</label>
+	    	<%= text_field_tag 'settings[client_id]', @settings['client_id'] %>
+		</p>
+		<p>
+			<label>client_secret</label>
+	    	<%= text_field_tag 'settings[client_secret]', @settings['client_secret'] %>
+		</p>
+	</fieldset>
 </div>
 <div style="clear: both;"></div>
 
