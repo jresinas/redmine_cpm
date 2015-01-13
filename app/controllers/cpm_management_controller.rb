@@ -363,16 +363,9 @@
   end
 
   def get_calendar  
-    token = OAuth2::AccessToken.from_hash(oauth_client, JSON.parse(session[:oauth_token]))
-
-    if token.expired?
-      token.refresh!
-      session[:oauth_token] = token.refresh!.to_hash.to_json
-    end
-
     #last_year = (Time.now.to_datetime-1.year).rfc3339
 
-    result = token.get('https://www.googleapis.com/calendar/v3/calendars/emergya.com_ll1ch378ikqdr680thlk5bcsjo@group.calendar.google.com/events?q=Vacaciones&maxResults=2500')
+    result = oauth_token.get('https://www.googleapis.com/calendar/v3/calendars/emergya.com_ll1ch378ikqdr680thlk5bcsjo@group.calendar.google.com/events?q=Vacaciones&maxResults=2500')
       
     data = JSON.parse(result.body)
 
@@ -391,6 +384,17 @@
     end
 
     @calendar = calendar
+  end
+
+  def oauth_token
+    @token ||= OAuth2::AccessToken.from_hash(oauth_client, JSON.parse(session[:oauth_token]))
+
+    if @token.expired?
+      @token.refresh!
+      session[:oauth_token] = @token.to_hash.to_json
+    end
+
+    @token
   end
 
   def oauth_client
