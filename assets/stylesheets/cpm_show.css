@@ -108,11 +108,3 @@ div.edit_row_options{
 	display:inline;
 	float:right;
 }
-
-#capacity_results tbody td.holiday{
-	background-color: #aaffaa;
-}
-
-#capacity_results tbody td.holiday:hover{
-	background-color:#ccffbb;
-}

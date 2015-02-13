@@ -151,10 +151,26 @@
     @time_unit = params[:time_unit] || 'week'
     @time_unit_num = (params[:time_unit_num] || 12).to_i
 
+    if @calendar.present?
+      absence_project_id = Setting.plugin_redmine_cpm['absence_project']
+      if absence_project_id.present?
+        holidays = {}
+        @users.each do |user|
+          holidays[user.id] = []
+          if @calendar[user.login].present?
+            @calendar[user.login].each do |cpm|
+              holidays[user.id] << CpmUserCapacity.new(user_id: user.id, project_id: absence_project_id, capacity: 100, from_date: cpm[0], to_date: cpm[1])
+            end
+          end
+        end
+      end
+    end
+
     @capacities = {}
     @users.each do |user|
-      @capacities[user.id] = @time_unit_num.times.collect{|i| {'value' => 0.0, 'tooltip' => "", 'holiday' => false}}
+      @capacities[user.id] = @time_unit_num.times.collect{|i| {'value' => 0.0, 'tooltip' => ""}}
       capacities = CpmUserCapacity.where('user_id = ? AND project_id IN(?)',user.id, @projects)
+      capacities += holidays[user.id] if holidays.present?
 
       capacities.each do |capacity|
         @time_unit_num.times do |i|
@@ -162,14 +178,6 @@
           end_day = CPM::CpmDate.get_due_date(@time_unit,i)
           @capacities[user.id][i]['value'] += capacity.get_relative(start_day, end_day)
           @capacities[user.id][i]['tooltip'] += capacity.get_tooltip(start_day, end_day)
-        end
-      end
-
-      if @calendar.present?
-        @time_unit_num.times do |i|
-          start_day = CPM::CpmDate.get_start_date(@time_unit,i)
-          end_day = CPM::CpmDate.get_due_date(@time_unit,i)
-          @capacities[user.id][i]['holiday'] = !@calendar[user.login].select{|e| e[0].to_date<=start_day and e[1].to_date>=end_day}.empty?
         end
       end
     end
@@ -349,12 +357,11 @@
   
   def oauth_authentication
     session[:params] = params
-    redirect_to oauth_client.auth_code.authorize_url(:redirect_uri => oauth_callback_url, :scope => scopes)
+    redirect_to oauth_client.auth_code.authorize_url(:redirect_uri => oauth_callback_url, :scope => scopes, :access_type => 'offline', :approval_prompt => 'force')
   end
 
   def oauth_callback
     token = oauth_client.auth_code.get_token(params[:code], :redirect_uri => oauth_callback_url)
-
     session[:oauth_token] = (token.to_hash).to_json
 
     params = session[:params]
@@ -364,22 +371,25 @@
 
   def get_calendar  
     #last_year = (Time.now.to_datetime-1.year).rfc3339
-
-    result = oauth_token.get('https://www.googleapis.com/calendar/v3/calendars/emergya.com_ll1ch378ikqdr680thlk5bcsjo@group.calendar.google.com/events?q=Vacaciones&maxResults=2500')
-      
-    data = JSON.parse(result.body)
-
     calendar = {}
-    data['items'].each do |e|
-      pattern = /(.+) - Vacaciones/
-      matches = pattern.match(e['summary'])
+    calendar_id = Setting.plugin_redmine_cpm[:calendar_id]
 
-      if matches[1].present?
-        unless calendar[matches[1]].present?
-          calendar[matches[1]] = []
-        end
+    if calendar_id.present?
+      result = oauth_token.get('https://www.googleapis.com/calendar/v3/calendars/'+calendar_id+'/events?fields=items(summary,start,end)&maxResults=2500')
         
-        calendar[matches[1]] << [e['start']['dateTime'],e['end']['dateTime']]
+      data = JSON.parse(result.body)
+
+      data['items'].each do |e|
+        pattern = /(.+) - / #/^([\w]+)/
+        matches = pattern.match(e['summary'])
+
+        if matches.present? and matches[1].present?
+          unless calendar[matches[1]].present?
+            calendar[matches[1]] = []
+          end
+          
+          calendar[matches[1]] << [e['start']['dateTime'].to_time+1.hour,e['end']['dateTime'].to_time+1.hour-1.day]
+        end
       end
     end
 
@@ -389,9 +399,11 @@
   def oauth_token
     @token ||= OAuth2::AccessToken.from_hash(oauth_client, JSON.parse(session[:oauth_token]))
 
-    if @token.expired?
-      @token.refresh!
-      session[:oauth_token] = @token.to_hash.to_json
+    if !@token.present? or @token.expired?
+      @token = @token.refresh!
+      #session[:oauth_token] = @token.to_hash.to_json
+
+      #session.delete(:oauth_token)
     end
 
     @token
@@ -402,7 +414,8 @@
       :site => 'https://accounts.google.com',
       :authorize_url => '/o/oauth2/auth',
       :token_url => '/o/oauth2/token',
-      :access_type => 'offline')
+      :access_type => 'offline',
+      :approval_prompt => 'force')
   end
 
   def scopes
