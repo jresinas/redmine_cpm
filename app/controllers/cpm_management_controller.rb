@@ -1,7 +1,7 @@
 ﻿class CpmManagementController < ApplicationController
   unloadable
 
-  before_filter :authorize_global
+  before_filter :authorize_global, :only => [:show]
   before_filter :set_menu_item
   before_filter :oauth_authentication, :only => :show, :unless => :oauth_token?
 
