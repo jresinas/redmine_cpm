@@ -112,6 +112,9 @@
     if @projects.empty? and !params[:custom_field].present? and !params[:project_manager].present?
       #flash.now[:warning] = l(:'cpm.msg_projects_not_found')
       @projects = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| p.id}
+      @projects_params = []
+    else
+      @projects_params = @projects
     end
 
     if !@projects.empty?
@@ -197,13 +200,20 @@
     end
 
     user = User.find_by_id(params[:user_id])
-    projects = params[:projects]
+
+    all_projects = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}
+
+    if params[:projects].present?
+      projects = params[:projects]
+    else
+      projects = all_projects.collect{|p| p.id}
+    end
     
     @from_date = Date.strptime(params[:from_date], "%d/%m/%y")
     @to_date = Date.strptime(params[:to_date], "%d/%m/%y")
 
     # load pojects options
-    @projects_for_selection = Project.where("id NOT IN (?)", ignored_projects).sort_by{|p| p.name}.collect{|p| [p.name,p.id]}
+    @projects_for_selection = all_projects.collect{|p| [p.name,p.id]}
     
     if projects.present?
       @default_project = projects[0]
@@ -355,6 +365,8 @@
     end
   end
   
+
+# Google Calendar
   def oauth_authentication
     session[:params] = params
     redirect_to oauth_client.auth_code.authorize_url(:redirect_uri => oauth_callback_url, :scope => scopes, :access_type => 'offline', :approval_prompt => 'force')
