@@ -17,6 +17,17 @@ module CPM
     end
 
     module ClassMethods
+      def not_allowed(ignore_blacklist = false)
+        if ignore_blacklist
+          [0]
+        else
+          Setting.plugin_redmine_cpm['ignored_users'] || [0]
+        end
+      end
+
+      def allowed(ignore_blacklist = false)
+        where("id NOT IN (?)", not_allowed(ignore_blacklist))
+      end
     end
 
     module InstanceMethods
