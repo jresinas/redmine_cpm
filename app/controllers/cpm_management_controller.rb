@@ -5,7 +5,7 @@
   before_filter :set_menu_item
   before_filter :oauth_authentication, :only => :show, :unless => :oauth_token?
 
-  helper :cpm_management
+  helper :cpm_management, :cpm_app
 
   def oauth_token?
     !Setting.plugin_redmine_cpm[:google_calendar].present? or session[:oauth_token].present?
@@ -252,12 +252,7 @@
   def get_filter_project_manager
     project_manager_role = Setting.plugin_redmine_cpm['project_manager_role'];
 
-    role_pm = Role.find_by_id(project_manager_role)
-
-    users = []
-
-    allowed = Project.allowed.collect{|p| p.id}
-    users = User.find(:all, :include => [:members, {:members => :member_roles}], :conditions => ["members.project_id IN ("+allowed.join(',')+") AND member_roles.role_id = ?", project_manager_role]).uniq
+    users = User.get_by_role(project_manager_role)
 
     @project_manager_selected = []
     if params['project_manager'].present?

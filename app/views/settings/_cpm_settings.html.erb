@@ -75,6 +75,14 @@
 	        	options_from_collection_for_select(Project.all.sort_by{|p| p.name}, :id, :name, @settings['absence_project']) %>
 		</p>
 	</fieldset>
+
+	<fieldset>
+		<legend><%= l(:"cpm.title_dependent_plugins") %></legend>
+		<p>
+			<label><%=l(:"cpm.label_plugin_cmi")%></label>
+	    	<%= check_box_tag 'settings[plugin_cmi]', true, @settings['plugin_cmi'].present? %>
+		</p>
+	</fieldset>
 </div>
 <div style="clear: both;"></div>
 
