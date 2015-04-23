@@ -9,7 +9,12 @@ class CpmReportsController < ApplicationController
   # Main view for reports generation
   def reports
     # Load report types
-    @report_types = [["","default"], [l(:"cpm.label_project_manager_role"), "project_manager"], [l(:"label_user"), "user"]]
+    @report_types = [["","default"]]
+
+    if Setting.plugin_redmine_cpm['project_manager_role'].present?
+      @report_types << [l(:"cpm.label_project_manager_role"), "project_manager"]
+      @report_types << [l(:"label_user"), "user"]
+    end
 
     if params[:report_type].present?
       @report = {}
