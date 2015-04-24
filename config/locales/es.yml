@@ -27,6 +27,7 @@ es:
     label_black_list_changes: "Se han producido cambios en las siguientes listas"
     label_save_changes_confirm: "¿Está seguro que desea guardar los cambios?"
     title_dependent_plugins: Plugins dependientes
+    text_dependent_plugins: Activa las siguientes opciones únicamente si tienes correctamente instalado y configurado el plugin indicado. Activando estas opciones puedes aumentar la información suministrada por determinados tipos de informe.
     label_plugin_cmi: Plugin CMI
 
     label_assignments: "Asignaciones"

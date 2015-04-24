@@ -78,6 +78,9 @@
 
 	<fieldset>
 		<legend><%= l(:"cpm.title_dependent_plugins") %></legend>
+		<div style="width:90%; margin-left:auto; margin-right:auto;">
+	    	<%= l(:"cpm.text_dependent_plugins") %>
+	    </div>
 		<p>
 			<label><%=l(:"cpm.label_plugin_cmi")%></label>
 	    	<%= check_box_tag 'settings[plugin_cmi]', true, @settings['plugin_cmi'].present? %>
