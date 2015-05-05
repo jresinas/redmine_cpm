@@ -48,5 +48,28 @@ module CPM
     def self.time_unit_num
     end
 
+    def self.knowledges(knowledges, users)
+      filtered_users = []
+
+      if users.present?
+=begin
+        ## AND
+        selected_users = users.reject{|u| 
+          knowledges.detect {|k| 
+            !u.knowledges.collect{|uk| uk.id}.include?(k)
+          }.present? 
+        }
+=end
+        ## OR
+        selected_users = users.select{|u| 
+          knowledges.detect {|k| 
+            u.knowledges.collect{|uk| uk.id}.include?(k)
+          }.present? 
+        }       
+      else
+        filtered_users = User.with_knowledges(knowledges)
+      end
+    end
+
 	end
 end

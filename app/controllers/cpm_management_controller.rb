@@ -103,8 +103,13 @@
         @users += CPM::Filters.groups(params[:groups], params['ignore_black_lists']).collect{|u| User.find(u)}
       end
 
+      # knowledge filter
+      if params[:knowledges].present?
+        @users = CPM::Filters.knowledges(params[:knowledges], @users)
+      end
+
       # reorder and unify users
-      @users = @users.uniq.sort_by{|u| u.login}
+      @users = @users.uniq.sort_by{|u| u.login} if @users.present?
 
       # if there are no users selected, get them based on projects selected
       if !@projects.blank? and @users.blank?
@@ -211,7 +216,7 @@
       @users_selected = params['users']
     end
 
-    @users_options = User.allowed(params['show_banned_users']).sort_by{|u| u.login}.collect{|u| [u.login, (u.id).to_s]}
+    @users_options = User.allowed(params['show_all_users']).sort_by{|u| u.login}.collect{|u| [u.login, (u.id).to_s]}
 
     if request.xhr?
       render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/users', :layout => false, :locals => { :options => @users_options }) }
@@ -220,7 +225,7 @@
 
   def get_filter_groups
     ignored_groups = Setting.plugin_redmine_cpm['ignored_groups'] || [0]
-    if params['show_banned_groups'].present?
+    if params['show_all_groups'].present?
       ignored_groups = [0]
     end
 
@@ -242,7 +247,7 @@
       @projects_selected = params['projects']
     end
 
-    @projects_options = Project.allowed(params['show_banned_projects']).sort_by{|p| p.name}.collect{|p| [p.name, (p.id).to_s]}
+    @projects_options = Project.allowed(params['show_all_projects']).sort_by{|p| p.name}.collect{|p| [p.name, (p.id).to_s]}
 
     if request.xhr?
       render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/projects', :layout => false, :locals => { :options => @projects_options }) }
@@ -309,6 +314,23 @@
   def get_filter_ignore_black_lists
     if request.xhr?
       render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/ignore_black_lists', :layout => false )}
+    end
+  end
+
+  def get_filter_knowledges
+    @knowledges_selected = []
+    if params['knowledges'].present?
+      @knowledges_selected = params['knowledges']
+    end
+
+    if params['show_all_knowledges'].present?
+      @knowledges_options = Knowledge.name_options
+    else
+      @knowledges_options = Knowledge.main_options
+    end
+
+    if request.xhr?
+      render :json => { :filter => render_to_string(:partial => 'cpm_management/filters/knowledges', :layout => false, :locals => { :options => @knowledges_options }) }
     end
   end
   

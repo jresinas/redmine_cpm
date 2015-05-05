@@ -85,6 +85,10 @@
 			<label><%=l(:"cpm.label_plugin_cmi")%></label>
 	    	<%= check_box_tag 'settings[plugin_cmi]', true, @settings['plugin_cmi'].present? %>
 		</p>
+		<p>
+			<label><%=l(:"cpm.label_plugin_knowledge_manager")%></label>
+	    	<%= check_box_tag 'settings[plugin_knowledge_manager]', true, @settings['plugin_knowledge_manager'].present? %>
+		</p>
 	</fieldset>
 </div>
 <div style="clear: both;"></div>
