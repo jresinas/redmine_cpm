@@ -137,7 +137,7 @@
           holidays[user.id] = []
           if @calendar[user.login].present?
             @calendar[user.login].each do |cpm|
-              holidays[user.id] << CpmUserCapacity.new(user_id: user.id, project_id: absence_project_id, capacity: 100, from_date: cpm[0], to_date: cpm[1])
+              holidays[user.id] << CpmUserCapacity.new(user_id: user.id, project_id: absence_project_id, capacity: 100, from_date: cpm[0].to_datetime, to_date: cpm[1].to_datetime)
             end
           end
         end
@@ -369,8 +369,8 @@
             unless calendar[matches[1]].present?
               calendar[matches[1]] = []
             end
-            
-            calendar[matches[1]] << [e['start']['dateTime'].to_time+1.hour,e['end']['dateTime'].to_time+1.hour-1.day]
+
+            calendar[matches[1]] << [e['start']['dateTime'].to_date,e['end']['dateTime'].to_date-1.day]
           end
         end
       end
