@@ -22,7 +22,7 @@
 					<%= link_to user.login, controller: 'users', action: 'edit', id: user.id %>
 				</td>
 				<% if Setting.plugin_redmine_cpm['plugin_knowledge_manager'].present? %>
-					<td class="knowledge"><%= user.main_knowledges.collect{|k| k.name}.join(', ').truncate(45) %></td>
+					<td class="knowledge" title="<%=user.show_tooltip_knowledges%>"><%= user.main_knowledges.collect{|k| k.name}.join(', ').truncate(45) %></td>
 				<% end %>
 				<% @time_unit_num.times do |i| %>
 					<% 
