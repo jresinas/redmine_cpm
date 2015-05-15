@@ -59,69 +59,65 @@
     @projects = []
 
     # getting @projects array
-    # add projects specified by project manager filter
-    if params[:project_manager].present?
-      @projects += CPM::Filters.project_manager(params[:project_manager])
+    # add projects specified by project filter
+    if params[:projects].present?
+      @projects = CPM::Filters.projects(params[:projects])
+    else
+      @projects = Project.allowed(params['ignore_black_lists'].present?).collect{|p| p.id} #.sort_by{|p| p.name}
     end
 
-    # exclude ignored projects
-    @projects = @projects.uniq.reject{|p| Project.not_allowed(params['ignore_black_lists'].present?).include?(p.to_s)}
+    # add projects specified by project manager filter
+    if params[:project_manager].present?
+      @projects = CPM::Filters.project_manager(params[:project_manager], @projects)
+    end
 
     # filter projects if custom field filters are specified
     if params[:custom_field].present?
-      # if there are no projects specified and there are field filters specified, get all not ignored projects by default
-      if @projects.empty?
-        @projects = Project.allowed(params['ignore_black_lists'].present?).sort_by{|p| p.name}.collect{|p| p.id}
-      end
-
       @projects = CPM::Filters.custom_field(params[:custom_field], @projects)
     end
 
-    # add projects specified by project filter
-    if params[:projects].present?
-      @projects += CPM::Filters.projects(params[:projects])
-      @projects.uniq
-    end
-
-    # if @projects are empty, get all not ignored projects by default
-    if @projects.empty? and !params[:custom_field].present? and !params[:project_manager].present?
-      @projects = Project.allowed(params['ignore_black_lists'].present?).sort_by{|p| p.name}.collect{|p| p.id}
-      @projects_params = []
-    else
-      @projects_params = @projects
-    end
 
     if !@projects.empty?
       # getting @users array
       # add users specified by users filter
       if params[:users].present?
-        @users += CPM::Filters.projects(params[:users]).collect{|u| User.find(u)}
+        @users = CPM::Filters.projects(params[:users])
+      else
+        @users = User.allowed(params['ignore_black_lists'].present?).collect{|u| u.id}
       end
 
       # add users specified by groups filter
       if params[:groups].present?
-        @users += CPM::Filters.groups(params[:groups], params['ignore_black_lists']).collect{|u| User.find(u)}
+        @users = CPM::Filters.groups(params[:groups], @users)
       end
-
+      
       # knowledge filter
       if params[:knowledges].present?
         @users = CPM::Filters.knowledges(params[:knowledges], @users)
       end
+    end
 
-      # reorder and unify users
-      @users = @users.uniq.sort_by{|u| u.login} if @users.present?
+    # get projects objects
+    if @projects.present?
+      @projects = Project.where("id IN (?)",@projects).sort_by{|p| p.name}
+    else
+      @projects = []
+    end
 
-      # if there are no users selected, get them based on projects selected
-      if !@projects.blank? and @users.blank?
-        projects = Project.where("id IN ("+@projects.join(',')+")")
+    # get users objects
+    # if there are NO users filters active, get users based on projects selected
+    if !params[:users].present? and !params[:groups].present? and !params[:knowledges].present?
+      # get users who are project members
+      members = Member.select("user_id").where("project_id IN (?)", @projects).collect(&:user_id)
+      # get users who have time entries in projects
+      time_entries = TimeEntry.select("user_id").where("project_id IN (?)", @projects).collect(&:user_id)
 
-        # get users who are project members
-        members = projects.collect{|p| p.members.collect{|m| m.user_id}}.flatten
-        # get users who have time entries in projects
-        time_entries = projects.collect{|p| p.time_entries.collect{|te| te.user_id}}.flatten
-
-        @users = User.where("id IN (?)", (members+time_entries).uniq).reject{|u| User.not_allowed(params['ignore_black_lists'].present?).include?((u.id).to_s)}.sort_by{|u| u.login}
-      end
+      users_not_allowed = User.not_allowed(params['ignore_black_lists'].present?)
+      @users = User.where("id IN (?)", (members+time_entries).uniq).reject{|u| users_not_allowed.include?((u.id).to_s)}.sort_by{|u| u.login}
+    elsif @users.present?
+      @users = User.where("id IN (?)",@users).sort_by{|u| u.login}
+    else
+      @users = []
     end
 
     # set time_unit and time_unit_num default values
