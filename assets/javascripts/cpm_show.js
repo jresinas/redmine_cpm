@@ -307,7 +307,7 @@ function sort_by_capacity(){
 			result[i-1]['row'] = $(this)[0].outerHTML; //.html();
 			result[i-1]['value'] = 0;
 			$.each($('td',row),function(j,col){
-				if (j>0){
+				if (j>0 && !$(col).hasClass('knowledge')){
 					result[i-1]['value'] += parseInt($(col).attr('value'));
 				}
 			});
